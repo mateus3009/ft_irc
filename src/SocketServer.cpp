@@ -31,6 +31,12 @@ SocketData::SocketData(const SocketData& other) : SocketBase(other) {};
 
 SocketData::~SocketData() {}
 
+SocketData& SocketData::operator=(const SocketData& other)
+{
+    SocketBase::operator=(other);
+    return *this;
+}
+
 void SocketData::send(void* data, size_t size) const
 {
     unsigned char*  buffer;
@@ -103,6 +109,12 @@ SocketServer::SocketServer(SocketServer& other) : SocketBase(other) {}
 
 SocketServer::~SocketServer() {}
 
+SocketServer& SocketServer::operator=(const SocketServer& other)
+{
+    SocketBase::operator=(other);
+    return *this;
+}
+
 SocketData SocketServer::accept(void) const
 {
     int newfd;
@@ -120,6 +132,13 @@ SocketListener::SocketListener(const SocketListener& other)
     : fds(other.fds), handlers(other.handlers) {}
 
 SocketListener::~SocketListener() {}
+
+SocketListener& SocketListener::operator=(const SocketListener& other)
+{
+    this->fds       = other.fds;
+    this->handlers  = other.handlers;
+    return *this;
+}
 
 void SocketListener::add(SocketInputHandler* handler)
 {

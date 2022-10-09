@@ -48,6 +48,8 @@ class SocketData : public SocketBase
 
         virtual ~SocketData();
 
+        SocketData& operator=(const SocketData& other);
+
         void send(void* data, size_t size) const;
 
         size_t get(void* data, size_t size) const;
@@ -88,6 +90,8 @@ class SocketServer : public SocketBase
 
         virtual ~SocketServer();
 
+        SocketServer& operator=(const SocketServer& other);
+
         SocketData accept(void) const;
 
 };
@@ -110,6 +114,8 @@ class SocketListener
         SocketListener(const SocketListener& other);
 
         virtual ~SocketListener();
+
+        SocketListener& operator=(const SocketListener& other);
 
         void add(SocketInputHandler* handler);
 
