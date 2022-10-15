@@ -10,7 +10,7 @@ class SocketData : public virtual FileDescriptor
     public:
         SocketData(void);
 
-        SocketData(const FileDescriptor& fd);
+        SocketData(const int& fd);
 
         SocketData(const SocketData& other);
 
@@ -47,10 +47,13 @@ void SocketData::receive(void* data, size_t size, F has_end) const
 
 class SocketServer : public virtual FileDescriptor
 {
+    private:
+        static FileDescriptor SocketServer::create(const char* port);
+
     public:
         SocketServer(void);
 
-        SocketServer(const FileDescriptor& fd);
+        SocketServer(const char* port);
 
         SocketServer(const SocketServer& other);
 
