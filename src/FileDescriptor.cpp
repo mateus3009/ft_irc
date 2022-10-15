@@ -1,23 +1,23 @@
 #include "FileDescriptor.hpp"
 
-FileDescriptor::FileDescriptor(void) : id(INVALID_FD) {}
+FileDescriptor::FileDescriptor(void) : _id(INVALID_FD) {}
 
-FileDescriptor::FileDescriptor(const int& fd) : id(fd) {}
+FileDescriptor::FileDescriptor(const int& fd) : _id(fd) {}
 
-FileDescriptor::FileDescriptor(const FileDescriptor& other) : id(other.id) {}
+FileDescriptor::FileDescriptor(const FileDescriptor& other) : _id(other._id) {}
 
 FileDescriptor::~FileDescriptor() {}
 
 FileDescriptor& FileDescriptor::operator=(const FileDescriptor& other)
 {
-    this->id = other.id;
+    this->_id = other._id;
     return *this;
 }
 
-int FileDescriptor::getId(void) const { return this->id; }
+int FileDescriptor::getId(void) const { return this->_id; }
 
 void FileDescriptor::close(void) const
 {
-    if (::close(this->id) < 0)
+    if (::close(this->_id) < 0)
         throw std::runtime_error(strerror(errno));
 }

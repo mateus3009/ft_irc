@@ -11,7 +11,7 @@
 class FileDescriptor
 {
     private:
-        int id;
+        int _id;
 
     public:
         FileDescriptor(void);
