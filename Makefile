@@ -1,7 +1,7 @@
 NAME := ircserv
 
-DIRECTORY_SOURCE	:= ./src
-DIRECTORY_HEADER	:= ./include
+DIRECTORY_SOURCE	:= ./srcs
+DIRECTORY_HEADER	:= ./includes
 DIRECTORY_TARGET	:= target
 
 FILE_SOURCE		:= $(filter %.cpp, $(shell find $(DIRECTORY_SOURCE) -type f))
