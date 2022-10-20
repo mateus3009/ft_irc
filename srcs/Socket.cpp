@@ -49,7 +49,7 @@ ssize_t SocketConnection::receive(void* buf, const size_t& n, const int& flags) 
 {
     ssize_t received;
 
-    received = ::send(_fd, buf, n, flags);
+    received = ::recv(_fd, buf, n, flags);
     if (received < 0)
         throw std::runtime_error(strerror(errno));
     return received;
