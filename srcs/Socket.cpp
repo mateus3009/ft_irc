@@ -57,6 +57,8 @@ ssize_t SocketConnection::receive(void* buf, const size_t& n, const int& flags) 
 
 SocketListener::SocketListener(void) : FileDescriptor() {}
 
+SocketListener::SocketListener(const int& fd) : FileDescriptor(fd) {}
+
 SocketListener::SocketListener(const char* port) : FileDescriptor()
 {
     addrinfo    hints;

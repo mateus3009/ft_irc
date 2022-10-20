@@ -26,6 +26,7 @@ class FileDescriptor
         int getId() const;
 
         void close(void);
+
 };
 
 class SocketConnection : public FileDescriptor
@@ -44,12 +45,15 @@ class SocketConnection : public FileDescriptor
         ssize_t send(const void* buf, const size_t& n, const int& flags = 0) const;
 
         ssize_t receive(void* buf, const size_t& n, const int& flags = 0) const;
+
 };
 
 class SocketListener : public FileDescriptor
 {
     public:
         SocketListener(void);
+
+        explicit SocketListener(const int& fd);
 
         explicit SocketListener(const char* port);
 
@@ -60,6 +64,7 @@ class SocketListener : public FileDescriptor
         SocketListener& operator=(const SocketListener& other);
 
         SocketConnection accept(void) const;
+
 };
 
 #endif
