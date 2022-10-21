@@ -14,7 +14,8 @@ int main(int argc, char** argv)
 
     SocketListener  server(argv[1]);
     EventListener   listener;
-    NewConnectionHandler    nch(server);
+    ClientStore     cs;
+    NewConnectionHandler    nch(server, &cs);
 
     listener.add(server.getId());
     listener.subscribe(&nch);

@@ -1,10 +1,10 @@
 #include "EventHandler.hpp"
 
-NewConnectionHandler::NewConnectionHandler(void) : _listener() {}
+NewConnectionHandler::NewConnectionHandler(void) : _listener(), _clientStore() {}
 
-NewConnectionHandler::NewConnectionHandler(const SocketListener& listener) : _listener(listener) {}
+NewConnectionHandler::NewConnectionHandler(const SocketListener& listener, ClientStore* clientStore) : _listener(listener), _clientStore(clientStore) {}
 
-NewConnectionHandler::NewConnectionHandler(const NewConnectionHandler& other) : _listener(other._listener) {}
+NewConnectionHandler::NewConnectionHandler(const NewConnectionHandler& other) : _listener(other._listener), _clientStore(other._clientStore) {}
 
 NewConnectionHandler::~NewConnectionHandler() {}
 
@@ -19,7 +19,7 @@ void NewConnectionHandler::handle(int fd)
     if (_listener.getId() != fd)
         return;
 
-    SocketConnection con(_listener.accept());
-    con.send("hello you!", 11);
-    con.close();
+    SocketConnection client(_listener.accept());
+    client.send("Hello you!\n", 12);
+    _clientStore->add(client);
 }

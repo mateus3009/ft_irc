@@ -3,16 +3,19 @@
 
 # include "Observer.hpp"
 # include "Socket.hpp"
+# include "ClientStore.hpp"
 
 class NewConnectionHandler : public Observer<int>
 {
     private:
-        SocketListener _listener;
+        SocketListener  _listener;
+
+        ClientStore*    _clientStore;
 
     public:
         NewConnectionHandler(void);
 
-        NewConnectionHandler(const SocketListener& listener);
+        NewConnectionHandler(const SocketListener& listener, ClientStore* clientStore);
 
         NewConnectionHandler(const NewConnectionHandler& other);
 
