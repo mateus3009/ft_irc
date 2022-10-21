@@ -2,8 +2,6 @@
 
 EventListener::EventListener(void) : _fds() {}
 
-EventListener::EventListener(const SocketListener &listener) : _fds() {}
-
 EventListener::EventListener(const EventListener &other) : _fds(other._fds) {}
 
 EventListener::~EventListener() {}
@@ -35,11 +33,9 @@ void EventListener::listen(void)
 
     while (true)
     {
-        events = poll(_fds.data(), _fds.size(), -1);
+        events = poll(_fds.data(), _fds.size(), 1200);
         if (events < 0)
             throw std::runtime_error(strerror(errno));
-
-        std::cout << "events: " << events << std::endl;
 
         for (it = _fds.begin(); it != _fds.end() && events > 0; ++it)
         {
@@ -48,6 +44,7 @@ void EventListener::listen(void)
 
             --events;
 
+            notify(it->fd);
         }
     }
 }

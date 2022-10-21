@@ -4,8 +4,10 @@
 # include <vector>
 # include <poll.h>
 # include <iostream>
+# include <stdexcept>
+# include <cerrno>
+# include <cstring>
 
-# include "Socket.hpp"
 # include "Observer.hpp"
 
 class EventListener
@@ -19,8 +21,6 @@ class EventListener
 
     public:
         EventListener(void);
-
-        EventListener(const SocketListener& listener);
 
         EventListener(const EventListener& other);
 

@@ -2,11 +2,12 @@
 # define OBSERVER_HPP
 
 # include <set>
+# include <iostream>
 
 template <typename T>
 struct Observer
 {
-    virtual void handler(T value) = 0;
+    virtual void handle(T value) = 0;
 };
 
 template <typename T>
@@ -63,8 +64,8 @@ void Publisher<T>::unsubscribe(Observer<T>* observer)
 template <typename T>
 void Publisher<T>::notify(T value)
 {
-    for (std::set<Observer<T>*>::iterator it = _subscribers.begin(); it != _subscribers.end(); ++it)
-        it->handler(value);
+    for (typename std::set<Observer<T>*>::iterator it = _subscribers.begin(); it != _subscribers.end(); ++it)
+        (*it)->handle(value);
 }
 
 #endif

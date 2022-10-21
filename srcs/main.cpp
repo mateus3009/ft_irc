@@ -1,6 +1,8 @@
 #include <iostream>
 #include <sstream>
+#include "Socket.hpp"
 #include "EventListener.hpp"
+#include "EventHandler.hpp"
 
 int main(int argc, char** argv)
 {
@@ -11,7 +13,11 @@ int main(int argc, char** argv)
     }
 
     SocketListener  server(argv[1]);
-    EventListener   listener(server);
+    EventListener   listener;
+    NewConnectionHandler    nch(server);
+
+    listener.add(server.getId());
+    listener.subscribe(&nch);
     listener.listen();
 
     return (0);
