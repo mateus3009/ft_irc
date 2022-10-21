@@ -7,7 +7,7 @@
 template <typename T>
 struct Observer
 {
-    virtual void handle(T value) = 0;
+    virtual void handle(T& value) = 0;
 };
 
 template <typename T>

@@ -15,9 +15,9 @@ class EventListener
     private:
         std::vector<pollfd> _fds;
 
-        Publisher<int>      _publisher;
+        Publisher<pollfd>   _publisher;
 
-        void notify(const int& fd);
+        void notify(const pollfd& fd);
 
     public:
         EventListener(void);
@@ -34,7 +34,7 @@ class EventListener
 
         void listen(void);
 
-        void subscribe(Observer<int>* observer);
+        void subscribe(Observer<pollfd>* observer);
 
 };
 

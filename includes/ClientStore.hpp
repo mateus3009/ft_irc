@@ -22,6 +22,8 @@ class ClientStore
         void add(const SocketConnection& client);
 
         void remove(const SocketConnection& client);
+
+        SocketConnection find(const int& fd);
 };
 
 #endif

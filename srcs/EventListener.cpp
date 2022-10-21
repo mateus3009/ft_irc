@@ -44,17 +44,17 @@ void EventListener::listen(void)
 
             --events;
 
-            notify(it->fd);
+            notify(*it);
         }
     }
 }
 
-void EventListener::subscribe(Observer<int>* observer)
+void EventListener::subscribe(Observer<pollfd>* observer)
 {
     _publisher.subscribe(observer);
 }
 
-void EventListener::notify(const int& fd)
+void EventListener::notify(const pollfd& fd)
 {
     _publisher.notify(fd);
 }

@@ -16,9 +16,11 @@ int main(int argc, char** argv)
     EventListener   listener;
     ClientStore     cs;
     NewConnectionHandler    nch(server, &cs);
+    NewDataHandler          ndh(&cs);
 
     listener.add(server.getId());
     listener.subscribe(&nch);
+    listener.subscribe(&ndh);
     listener.listen();
 
     return (0);
