@@ -12,15 +12,19 @@ int main(int argc, char** argv)
         return (1);
     }
 
-    SocketListener  server(argv[1]);
-    EventListener   listener;
-    ClientStore     cs;
-    NewConnectionHandler    nch(server, &cs);
-    NewDataHandler          ndh(&cs);
+    SocketListener                  server(argv[1]);
+    EventListener                   listener;
+    ClientStore                     cs;
+    NewConnectionHandler            nch(server, &cs);
+    NewDataHandler                  ndh(&cs);
+    NewSocketConnectionHandler      nsch(&listener);
+    NewSocketDisconnectionHandler   nsdh(&listener);
 
     listener.add(server.getId());
     listener.subscribe(&nch);
     listener.subscribe(&ndh);
+    cs.subscribeNewConnection(&nsch);
+    cs.subscribeNewDisconnection(&nsdh);
     listener.listen();
 
     return (0);

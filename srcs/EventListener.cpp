@@ -19,10 +19,15 @@ void EventListener::add(const int& fd)
 
 void EventListener::remove(const int& fd)
 {
-    for (std::vector<pollfd>::iterator it = _fds.begin(); it != _fds.end(); ++it)
+    std::vector<pollfd>::iterator it;
+
+    it = _fds.begin();
+    while (it != _fds.end())
     {
         if (it->fd == fd)
             _fds.erase(it);
+        else
+            ++it;
     }
 }
 
