@@ -75,3 +75,13 @@ void ClientStore::notifyNewDisconnection(SocketConnection value)
 {
     _newDisconnection.notify(value);
 }
+
+std::vector<SocketConnection>::const_iterator ClientStore::begin(void) const
+{
+    return _clients.begin();
+}
+
+std::vector<SocketConnection>::const_iterator ClientStore::end(void) const
+{
+    return _clients.end();
+}

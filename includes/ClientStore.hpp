@@ -37,6 +37,10 @@ class ClientStore
         void subscribeNewConnection(Observer<SocketConnection>* observer);
 
         void subscribeNewDisconnection(Observer<SocketConnection>* observer);
+
+        std::vector<SocketConnection>::const_iterator begin(void) const;
+
+        std::vector<SocketConnection>::const_iterator end(void) const;
 };
 
 #endif

@@ -60,7 +60,21 @@ void NewDataHandler::handle(pollfd& event)
         _clientStore->remove(client);
         return ;
     }
-    std::cout << client.getId() <<  ": " << data << std::endl;
+
+    std::vector<SocketConnection>::const_iterator it = _clientStore->begin();
+    while (it != _clientStore->end())
+    {
+        try
+        {
+            it->send(data, r);
+            ++it;
+        }
+        catch(const std::exception& e)
+        {
+            std::cerr << "Error when sending data to " << it->getId() << std::endl;
+            _clientStore->remove(*it);
+        }
+    }
 }
 
 NewSocketConnectionHandler::NewSocketConnectionHandler(void) : _eventListener() {}

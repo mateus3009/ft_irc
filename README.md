@@ -32,8 +32,8 @@ My own internet relay chat server
 # TODO
 
 [x] Manter mais de um cliente conectado
-[ ] Avisar quando um cliene sai do chat
-[ ] Receber uma mensagem e enviar para os demais clientes
+[x] Avisar quando um cliene sai do chat
+[x] Receber uma mensagem e enviar para os demais clientes
 
 [ ] Parse de um comando
 [ ] Permitir que um cliente entre em um canal
