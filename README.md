@@ -35,5 +35,5 @@ My own internet relay chat server
 [x] Avisar quando um cliene sai do chat
 [x] Receber uma mensagem e enviar para os demais clientes
 
-[ ] Parse de um comando
+[x] Parse de um comando
 [ ] Permitir que um cliente entre em um canal

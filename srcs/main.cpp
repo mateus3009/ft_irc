@@ -3,16 +3,11 @@
 #include "Socket.hpp"
 #include "EventListener.hpp"
 #include "EventHandler.hpp"
+#include "IrcMessage.hpp"
 
-int main(int argc, char** argv)
+void irc_context(const char* port)
 {
-    if (argc < 2)
-    {
-        std::cerr << "Usage: " << argv[0] << " <port>" << std::endl;
-        return (1);
-    }
-
-    SocketListener                  server(argv[1]);
+    SocketListener                  server(port);
     EventListener                   listener;
     ClientStore                     cs;
     NewConnectionHandler            nch(server, &cs);
@@ -26,6 +21,17 @@ int main(int argc, char** argv)
     cs.subscribeNewConnection(&nsch);
     cs.subscribeNewDisconnection(&nsdh);
     listener.listen();
+}
+
+int main(int argc, char** argv)
+{
+    if (argc < 2)
+    {
+        std::cerr << "Usage: " << argv[0] << " <port>" << std::endl;
+        return (1);
+    }
+
+    irc_context(argv[1]);
 
     return (0);
 }

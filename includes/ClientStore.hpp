@@ -41,6 +41,7 @@ class ClientStore
         std::vector<SocketConnection>::const_iterator begin(void) const;
 
         std::vector<SocketConnection>::const_iterator end(void) const;
+
 };
 
 #endif
