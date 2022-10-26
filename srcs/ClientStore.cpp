@@ -1,10 +1,10 @@
 #include "ClientStore.hpp"
 
-ClientStore::ClientStore(void) : _clients(), _newConnection(), _newDisconnection() {}
+GlobalClientStore::GlobalClientStore(void) : _clients(), _newConnection(), _newDisconnection() {}
 
-ClientStore::ClientStore(const ClientStore& other) : _clients(other._clients), _newConnection(other._newConnection), _newDisconnection(other._newDisconnection) {}
+GlobalClientStore::GlobalClientStore(const GlobalClientStore& other) : _clients(other._clients), _newConnection(other._newConnection), _newDisconnection(other._newDisconnection) {}
 
-ClientStore::~ClientStore()
+GlobalClientStore::~GlobalClientStore()
 {
     std::vector<SocketConnection>::iterator it;
 
@@ -12,19 +12,19 @@ ClientStore::~ClientStore()
         it->close();
 }
 
-ClientStore& ClientStore::operator=(const ClientStore& other)
+GlobalClientStore& GlobalClientStore::operator=(const GlobalClientStore& other)
 {
     _clients            = other._clients;
     return *this;
 }
 
-void ClientStore::add(const SocketConnection& client)
+void GlobalClientStore::add(const SocketConnection& client)
 {
     _clients.push_back(client);
     _newConnection.notify(client);
 }
 
-void ClientStore::remove(const SocketConnection& client)
+void GlobalClientStore::remove(const SocketConnection& client)
 {
     std::vector<SocketConnection>::iterator it;
 
@@ -42,7 +42,7 @@ void ClientStore::remove(const SocketConnection& client)
     }
 }
 
-SocketConnection ClientStore::find(const int& fd)
+SocketConnection GlobalClientStore::find(const int& fd)
 {
     std::vector<SocketConnection>::iterator it;
 
@@ -54,34 +54,34 @@ SocketConnection ClientStore::find(const int& fd)
     throw std::runtime_error("Client not found!");
 }
 
-void ClientStore::subscribeNewConnection(Observer<SocketConnection>* observer)
+void GlobalClientStore::subscribeNewConnection(Observer<SocketConnection>* observer)
 {
     if (observer != NULL)
         _newConnection.subscribe(observer);
 }
 
-void ClientStore::notifyNewConnection(SocketConnection value)
+void GlobalClientStore::notifyNewConnection(SocketConnection value)
 {
     _newConnection.notify(value);
 }
 
-void ClientStore::subscribeNewDisconnection(Observer<SocketConnection>* observer)
+void GlobalClientStore::subscribeNewDisconnection(Observer<SocketConnection>* observer)
 {
     if (observer != NULL)
         _newDisconnection.subscribe(observer);
 }
 
-void ClientStore::notifyNewDisconnection(SocketConnection value)
+void GlobalClientStore::notifyNewDisconnection(SocketConnection value)
 {
     _newDisconnection.notify(value);
 }
 
-std::vector<SocketConnection>::const_iterator ClientStore::begin(void) const
+std::vector<SocketConnection>::const_iterator GlobalClientStore::begin(void) const
 {
     return _clients.begin();
 }
 
-std::vector<SocketConnection>::const_iterator ClientStore::end(void) const
+std::vector<SocketConnection>::const_iterator GlobalClientStore::end(void) const
 {
     return _clients.end();
 }

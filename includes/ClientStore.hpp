@@ -6,7 +6,7 @@
 # include <vector>
 # include <algorithm>
 
-class ClientStore
+class GlobalClientStore
 {
     private:
         std::vector<SocketConnection>   _clients;
@@ -20,13 +20,13 @@ class ClientStore
         void notifyNewDisconnection(SocketConnection value);
 
     public:
-        ClientStore(void);
+        GlobalClientStore(void);
 
-        ClientStore(const ClientStore& other);
+        GlobalClientStore(const GlobalClientStore& other);
 
-        ~ClientStore();
+        ~GlobalClientStore();
 
-        ClientStore& operator=(const ClientStore& other);
+        GlobalClientStore& operator=(const GlobalClientStore& other);
 
         void add(const SocketConnection& client);
 

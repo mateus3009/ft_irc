@@ -9,7 +9,7 @@ void irc_context(const char* port)
 {
     SocketListener                  server(port);
     EventListener                   listener;
-    ClientStore                     cs;
+    GlobalClientStore                     cs;
     NewConnectionHandler            nch(server, &cs);
     NewDataHandler                  ndh(&cs);
     NewSocketConnectionHandler      nsch(&listener);

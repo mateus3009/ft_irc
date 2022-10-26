@@ -6,18 +6,19 @@
 # include "Socket.hpp"
 # include "ClientStore.hpp"
 # include "EventListener.hpp"
+# include "ChannelStore.hpp"
 
 class NewConnectionHandler : public Observer<pollfd>
 {
     private:
         SocketListener  _listener;
 
-        ClientStore*    _clientStore;
+        GlobalClientStore*    _clientStore;
 
     public:
         NewConnectionHandler(void);
 
-        NewConnectionHandler(const SocketListener& listener, ClientStore* clientStore);
+        NewConnectionHandler(const SocketListener& listener, GlobalClientStore* clientStore);
 
         NewConnectionHandler(const NewConnectionHandler& other);
 
@@ -31,12 +32,14 @@ class NewConnectionHandler : public Observer<pollfd>
 class NewDataHandler : public Observer<pollfd>
 {
     private:
-        ClientStore*    _clientStore;
+        GlobalClientStore*    _clientStore;
+
+        IrcChannel              _channel;
 
     public:
         NewDataHandler(void);
 
-        NewDataHandler(ClientStore* clientStore);
+        NewDataHandler(GlobalClientStore* clientStore);
 
         NewDataHandler(const NewDataHandler& other);
 
@@ -45,6 +48,8 @@ class NewDataHandler : public Observer<pollfd>
         NewDataHandler& operator=(const NewDataHandler& other);
 
         void handle(pollfd& fd);
+
+        void sendToEveryone(const SocketConnection& client, const char* data, size_t len) const;
 };
 
 class NewSocketConnectionHandler : public Observer<SocketConnection>

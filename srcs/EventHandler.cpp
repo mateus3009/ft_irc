@@ -2,7 +2,7 @@
 
 NewConnectionHandler::NewConnectionHandler(void) : _listener(), _clientStore() {}
 
-NewConnectionHandler::NewConnectionHandler(const SocketListener& listener, ClientStore* clientStore) : _listener(listener), _clientStore(clientStore) {}
+NewConnectionHandler::NewConnectionHandler(const SocketListener& listener, GlobalClientStore* clientStore) : _listener(listener), _clientStore(clientStore) {}
 
 NewConnectionHandler::NewConnectionHandler(const NewConnectionHandler& other) : _listener(other._listener), _clientStore(other._clientStore) {}
 
@@ -25,11 +25,11 @@ void NewConnectionHandler::handle(pollfd& event)
     _clientStore->add(client);
 }
 
-NewDataHandler::NewDataHandler(void) : _clientStore() {}
+NewDataHandler::NewDataHandler(void) : _clientStore(), _channel() {}
 
-NewDataHandler::NewDataHandler(ClientStore* clientStore) : _clientStore(clientStore) {}
+NewDataHandler::NewDataHandler(GlobalClientStore* clientStore) : _clientStore(clientStore), _channel() {}
 
-NewDataHandler::NewDataHandler(const NewDataHandler& other) : _clientStore(other._clientStore) {}
+NewDataHandler::NewDataHandler(const NewDataHandler& other) : _clientStore(other._clientStore), _channel() {}
 
 NewDataHandler::~NewDataHandler() {}
 
@@ -61,12 +61,27 @@ void NewDataHandler::handle(pollfd& event)
         return ;
     }
 
+    IrcMessage msg = IrcMessage::parse(data);
+
+    if (msg.verb == "JOIN")
+        _channel.add(client);
+    else if (msg.verb == "LEAVE")
+        _channel.remove(client);
+    else if (msg.verb == "CHAT")
+        _channel.broadcast(client, msg);
+    else
+        this->sendToEveryone(client, data, r);
+}
+
+void NewDataHandler::sendToEveryone(const SocketConnection& client, const char* data, size_t len) const
+{
     std::vector<SocketConnection>::const_iterator it = _clientStore->begin();
     while (it != _clientStore->end())
     {
         try
         {
-            it->send(data, r);
+            if (it->getId() != client.getId())
+                it->send(data, len);
             ++it;
         }
         catch(const std::exception& e)

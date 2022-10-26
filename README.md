@@ -36,4 +36,4 @@ My own internet relay chat server
 [x] Receber uma mensagem e enviar para os demais clientes
 
 [x] Parse de um comando
-[ ] Permitir que um cliente entre em um canal
+[x] Permitir que um cliente entre em um canal
