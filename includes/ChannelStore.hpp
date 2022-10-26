@@ -21,14 +21,16 @@ class IrcChannel
 
         IrcChannel& operator=(const IrcChannel& other);
 
+        std::string getName(void) const;
+
         void add(const SocketConnection& client);
 
         void remove(const SocketConnection& client);
 
-        void broadcast(const SocketConnection& client, const IrcMessage& msg);
+        void broadcast(const SocketConnection& client, const IrcMessage& msg) const;
 };
 
-/*class ChannelStore
+class ChannelStore
 {
     private:
         std::vector<IrcChannel> _channels;
@@ -42,9 +44,11 @@ class IrcChannel
 
         ChannelStore& operator=(const ChannelStore& other);
 
-        void add(const IrcChannel)
-}*/
+        //void add(const std::string& channel);
 
+        //void remove(const std::string& channel);
 
+        IrcChannel& find(const std::string& channel);
+};
 
 #endif

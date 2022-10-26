@@ -13,6 +13,11 @@ IrcChannel& IrcChannel::operator=(const IrcChannel& other)
     return *this;
 }
 
+std::string IrcChannel::getName(void) const
+{
+    return _name;
+}
+
 void IrcChannel::add(const SocketConnection& client)
 {
     _clients.push_back(client);
@@ -34,7 +39,7 @@ void IrcChannel::remove(const SocketConnection& client)
     }
 }
 
-void IrcChannel::broadcast(const SocketConnection& client, const IrcMessage& msg)
+void IrcChannel::broadcast(const SocketConnection& client, const IrcMessage& msg) const
 {
     std::vector<SocketConnection>::const_iterator it = _clients.begin();
     while (it != _clients.end())
@@ -50,4 +55,31 @@ void IrcChannel::broadcast(const SocketConnection& client, const IrcMessage& msg
             continue ;
         }
     }
+}
+
+ChannelStore::ChannelStore(void) : _channels() {}
+
+ChannelStore::ChannelStore(const ChannelStore& other) : _channels(other._channels) {}
+
+ChannelStore::~ChannelStore() {}
+
+ChannelStore& ChannelStore::operator=(const ChannelStore& other)
+{
+    _channels = other._channels;
+    return *this;
+}
+
+IrcChannel& ChannelStore::find(const std::string& channel)
+{
+    std::vector<IrcChannel>::iterator it;
+
+    it = _channels.begin();
+    while (it != _channels.end())
+    {
+        if (it->getName() == channel)
+            return *it;
+        ++it;
+    }
+
+    throw std::runtime_error("Channel not found!");
 }
