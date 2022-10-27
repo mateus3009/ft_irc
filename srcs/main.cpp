@@ -5,6 +5,10 @@
 #include "EventHandler.hpp"
 #include "IrcMessage.hpp"
 
+# include "SharedPtr.hpp"
+# include "Either.hpp"
+# include "Optional.hpp"
+
 void irc_context(const char* port)
 {
     SocketListener                  server(port);
