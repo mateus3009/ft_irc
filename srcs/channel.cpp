@@ -1,18 +1,5 @@
 #include "channel.hpp"
 
-channel::channel(void) : _name(), _clients() {}
-
-channel::channel(const channel& other) : _name(other._name), _clients(other._clients) {}
-
-channel::~channel() {}
-
-channel& channel::operator=(const channel& other)
-{
-    _name       = other._name;
-    _clients    = other._clients;
-    return *this;
-}
-
 std::string channel::getName(void) const
 {
     return _name;

@@ -1,23 +1,5 @@
 #include "client.hpp"
 
-client_store::client_store(void) : _clients(), _newConnection(), _newDisconnection() {}
-
-client_store::client_store(const client_store& other) : _clients(other._clients), _newConnection(other._newConnection), _newDisconnection(other._newDisconnection) {}
-
-client_store::~client_store()
-{
-    std::vector<socket_connection>::iterator it;
-
-    for (it = _clients.begin(); it != _clients.end(); ++it)
-        it->close();
-}
-
-client_store& client_store::operator=(const client_store& other)
-{
-    _clients            = other._clients;
-    return *this;
-}
-
 void client_store::add(const socket_connection& client)
 {
     _clients.push_back(client);

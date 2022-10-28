@@ -20,14 +20,6 @@ class client_store
         void notify_new_disconnection(socket_connection value);
 
     public:
-        client_store(void);
-
-        client_store(const client_store& other);
-
-        ~client_store();
-
-        client_store& operator=(const client_store& other);
-
         void add(const socket_connection& client);
 
         void remove(const socket_connection& client);

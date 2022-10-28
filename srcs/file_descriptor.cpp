@@ -10,3 +10,5 @@ void file_descriptor::close(void)
         throw std::runtime_error(strerror(errno));
     _fd = INVALID_FD;
 }
+
+bool file_descriptor::is_valid(void) const { return _fd == INVALID_FD; }

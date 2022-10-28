@@ -1,17 +1,5 @@
 #include "event_listener.hpp"
 
-event_listener::event_listener(void) : _fds() {}
-
-event_listener::event_listener(const event_listener &other) : _fds(other._fds) {}
-
-event_listener::~event_listener() {}
-
-event_listener &event_listener::operator=(const event_listener &other)
-{
-    _fds = other._fds;
-    return *this;
-}
-
 void event_listener::add(const int& fd)
 {
     _fds.push_back((pollfd){.fd = fd, .events = POLLIN});

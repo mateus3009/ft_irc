@@ -11,14 +11,6 @@ class channel_store
         std::vector<channel> _channels;
 
     public:
-        channel_store(void);
-
-        channel_store(const channel_store& other);
-
-        ~channel_store();
-
-        channel_store& operator=(const channel_store& other);
-
         //void add(const std::string& channel);
 
         //void remove(const std::string& channel);

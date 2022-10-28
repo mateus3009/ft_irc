@@ -13,14 +13,6 @@ class channel
         std::vector<socket_connection>  _clients;
 
     public:
-        channel(void);
-
-        channel(const channel& other);
-
-        ~channel();
-
-        channel& operator=(const channel& other);
-
         std::string getName(void) const;
 
         void add(const socket_connection& client);

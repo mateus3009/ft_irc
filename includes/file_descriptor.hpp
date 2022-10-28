@@ -20,6 +20,8 @@ class file_descriptor
 
         void close(void);
 
+        bool is_valid(void) const;
+
 };
 
 #endif

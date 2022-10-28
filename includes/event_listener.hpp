@@ -20,14 +20,6 @@ class event_listener
         void notify(const pollfd& fd);
 
     public:
-        event_listener(void);
-
-        event_listener(const event_listener& other);
-
-        ~event_listener();
-
-        event_listener& operator=(const event_listener& other);
-
         void add(const int& fd);
 
         void remove(const int& fd);
