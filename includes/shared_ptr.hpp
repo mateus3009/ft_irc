@@ -1,7 +1,7 @@
 #ifndef SHAREDPTR_HPP
 # define SHAREDPTR_HPP
 
-# include "Exceptions.hpp"
+# include "exceptions.hpp"
 # include <cstddef>
 # include <memory>
 
@@ -13,15 +13,15 @@ struct counting_reference
 };
 
 template <typename T>
-class SharedPtr
+class shared_ptr
 {
     private:
         counting_reference<T>* _ref;
 
     public:
-        SharedPtr(void) : _ref(NULL) {}
+        shared_ptr(void) : _ref(NULL) {}
 
-        SharedPtr(T* value) : _ref(NULL)
+        shared_ptr(T* value) : _ref(NULL)
         {
             if (value == NULL)
                 return ;
@@ -30,13 +30,13 @@ class SharedPtr
             _ref->count = 1;
         }
 
-        SharedPtr(const SharedPtr& other) : _ref(other._ref)
+        shared_ptr(const shared_ptr& other) : _ref(other._ref)
         {
             if (_ref != NULL)
                 ++_ref->count;
         }
 
-        ~SharedPtr()
+        ~shared_ptr()
         {
             if (_ref != NULL && --_ref->count == 0)
             {
@@ -45,7 +45,7 @@ class SharedPtr
             }
         }
 
-        SharedPtr& operator=(const SharedPtr& other)
+        shared_ptr& operator=(const shared_ptr& other)
         {
             if (_ref == other._ref)
                 return ;
@@ -65,28 +65,28 @@ class SharedPtr
         const T* operator->() const
         {
             if (_ref == NULL)
-                throw IllegalAccessException("The pointer has a invalid value!");
+                throw illegal_access_exception("The pointer has a invalid value!");
             return _ref->value;
         }
 
         T* operator->()
         {
             if (_ref == NULL)
-                throw IllegalAccessException("The pointer has a invalid value!");
+                throw illegal_access_exception("The pointer has a invalid value!");
             return _ref->value;
         }
 
         const T& operator*() const
         {
             if (_ref == NULL)
-                throw IllegalAccessException("The pointer has a invalid value!");
+                throw illegal_access_exception("The pointer has a invalid value!");
             return *_ref->value;
         }
 
         T& operator*()
         {
             if (_ref == NULL)
-                throw IllegalAccessException("The pointer has a invalid value!");
+                throw illegal_access_exception("The pointer has a invalid value!");
             return *_ref->value;
         }
 };

@@ -1,6 +1,6 @@
-#include "IrcMessage.hpp"
+#include "message.hpp"
 
-IrcMessage IrcMessage::parse(const char* data)
+message message::parse(const char* data)
 {
         if (data == NULL || *data == '\0')
         throw std::runtime_error("No data was provided!");
@@ -12,7 +12,7 @@ IrcMessage IrcMessage::parse(const char* data)
     if (data[index] == '\0')
         throw std::runtime_error("The data providade was blank!");
 
-    IrcMessage      message;
+    message      message;
     unsigned int    start;
 
     if (data[index] == ':')
