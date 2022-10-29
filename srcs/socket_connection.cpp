@@ -1,6 +1,7 @@
 #include "socket_connection.hpp"
 
 socket_connection::socket_connection(const int& fd) : file_descriptor(fd) {}
+socket_connection::socket_connection() : file_descriptor() {}
 
 ssize_t socket_connection::send(const void* buf, const size_t& n, const int& flags) const
 {

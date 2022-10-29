@@ -4,6 +4,7 @@
 # include <poll.h>
 # include "observer.hpp"
 # include "socket_listener.hpp"
+# include "socket_connection.hpp"
 # include "client.hpp"
 # include "event_listener.hpp"
 # include "channel.hpp"
