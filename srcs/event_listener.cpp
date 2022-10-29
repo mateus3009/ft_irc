@@ -1,23 +1,11 @@
-#include "EventListener.hpp"
+#include "event_listener.hpp"
 
-EventListener::EventListener(void) : _fds() {}
-
-EventListener::EventListener(const EventListener &other) : _fds(other._fds) {}
-
-EventListener::~EventListener() {}
-
-EventListener &EventListener::operator=(const EventListener &other)
-{
-    _fds = other._fds;
-    return *this;
-}
-
-void EventListener::add(const int& fd)
+void event_listener::add(const int& fd)
 {
     _fds.push_back((pollfd){.fd = fd, .events = POLLIN});
 }
 
-void EventListener::remove(const int& fd)
+void event_listener::remove(const int& fd)
 {
     std::vector<pollfd>::iterator it;
 
@@ -31,7 +19,7 @@ void EventListener::remove(const int& fd)
     }
 }
 
-void EventListener::listen(void)
+void event_listener::listen(void)
 {
     int events;
     std::vector<pollfd>::iterator it;
@@ -54,12 +42,12 @@ void EventListener::listen(void)
     }
 }
 
-void EventListener::subscribe(Observer<pollfd>* observer)
+void event_listener::subscribe(observer<pollfd>* observer)
 {
     _publisher.subscribe(observer);
 }
 
-void EventListener::notify(const pollfd& fd)
+void event_listener::notify(const pollfd& fd)
 {
     _publisher.notify(fd);
 }

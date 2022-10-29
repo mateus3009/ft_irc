@@ -1,8 +1,8 @@
-#include "IrcMessage.hpp"
+#include "message.hpp"
 
-void IrcMessage::validateData(const char* data, unsigned int *index){
-	
-	 if (data == NULL || *data == '\0')
+void message::validateData(const char* data, unsigned int *index)
+{
+        if (data == NULL || *data == '\0')
         throw std::runtime_error("No data was provided!");
     while (strchr(" \t", data[*index]) != NULL)
         ++index;
@@ -10,8 +10,7 @@ void IrcMessage::validateData(const char* data, unsigned int *index){
         throw std::runtime_error("The data providade was blank!");
 
 }
-
-void IrcMessage::getInfoClient(const char* data, unsigned int *index,IrcMessage *message){
+void message::getInfoClient(const char* data, unsigned int *index,message *message){
 	unsigned int    start;
 
 	start = ++*index;
@@ -34,7 +33,7 @@ void IrcMessage::getInfoClient(const char* data, unsigned int *index,IrcMessage 
         }
 }
 
-void IrcMessage::get_command(const char* data, unsigned int *index,IrcMessage *message){
+void message::get_command(const char* data, unsigned int *index,message *message){
 	while (strchr(" \t", data[*index]) != NULL)
         ++*index;
     unsigned int start = *index;
@@ -42,7 +41,7 @@ void IrcMessage::get_command(const char* data, unsigned int *index,IrcMessage *m
         ++*index;
     message->verb = std::string(data + start, data + *index);
 }
-void IrcMessage::get_message(const char* data, unsigned int index,IrcMessage *message){
+void message::get_message(const char* data, unsigned int index,message *message){
 	unsigned int start = index;
 
 	while (strchr(" \t", data[index]) != NULL)
@@ -52,7 +51,7 @@ void IrcMessage::get_message(const char* data, unsigned int index,IrcMessage *me
 	message->message_to_send = std::string(data + start, data + index);
 
 }
-void IrcMessage::get_params(const char* data, unsigned int *index,IrcMessage *message){
+void message::get_params(const char* data, unsigned int *index, message *message){
 	unsigned int start;
 	get_message(data, *index, message);
 	while (data[*index] != '\0')
@@ -78,16 +77,16 @@ void IrcMessage::get_params(const char* data, unsigned int *index,IrcMessage *me
     }
 }
 
-IrcMessage IrcMessage::parse(const char* data)
+message message::parse(const char* data)
 {
-	IrcMessage      message;
+	message      message;
 	unsigned int 	index = 0;
 
-	IrcMessage::validateData(data, &index);
+	message::validateData(data, &index);
     if (data[index] == ':'){
-        IrcMessage::getInfoClient(data, &index, &message);
+        message::getInfoClient(data, &index, &message);
 	}
-    IrcMessage::get_command(data, &index, &message);
-    IrcMessage::get_params(data, &index, &message);
+    message::get_command(data, &index, &message);
+    message::get_params(data, &index, &message);
     return message;
 }
