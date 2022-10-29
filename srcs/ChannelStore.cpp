@@ -28,13 +28,14 @@ void IrcChannel::remove(const SocketConnection& client)
         if (it->getId() == client.getId())
         {
             _clients.erase(it);
+			this->broadcast(client, "cliente tanana leave group");
         }
         else
             ++it;
     }
 }
 
-void IrcChannel::broadcast(const SocketConnection& client, const IrcMessage& msg)
+void IrcChannel::broadcast(const SocketConnection& client, const std::string &msg)
 {
     std::vector<SocketConnection>::const_iterator it = _clients.begin();
     while (it != _clients.end())
@@ -42,7 +43,7 @@ void IrcChannel::broadcast(const SocketConnection& client, const IrcMessage& msg
         try
         {
             if (it->getId() != client.getId())
-                it->send(msg.params.begin()->c_str(), msg.params.begin()->length());
+                it->send(msg.c_str(), msg.length());
             ++it;
         }
         catch(const std::exception& e)

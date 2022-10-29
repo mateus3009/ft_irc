@@ -25,7 +25,7 @@ class IrcChannel
 
         void remove(const SocketConnection& client);
 
-        void broadcast(const SocketConnection& client, const IrcMessage& msg);
+        void broadcast(const SocketConnection& client,const std::string &msg);
 };
 
 /*class ChannelStore

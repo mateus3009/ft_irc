@@ -62,13 +62,13 @@ void NewDataHandler::handle(pollfd& event)
     }
 
     IrcMessage msg = IrcMessage::parse(data);
-
+	std::cout << msg.verb << std::endl;
     if (msg.verb == "JOIN")
         _channel.add(client);
     else if (msg.verb == "LEAVE")
         _channel.remove(client);
     else if (msg.verb == "CHAT")
-        _channel.broadcast(client, msg);
+        _channel.broadcast(client, msg.message_to_send);
     else
         this->sendToEveryone(client, data, r);
 }
