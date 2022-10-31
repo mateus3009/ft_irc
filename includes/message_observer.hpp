@@ -4,9 +4,9 @@
 # include <utility>
 
 # include "observer.hpp"
+# include "router.hpp"
 # include "request.hpp"
 # include "response.hpp"
-# include "message.hpp"
 
 class message_observer : public observer<std::pair<request, response> >
 {

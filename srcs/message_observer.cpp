@@ -2,5 +2,6 @@
 
 void message_observer::handle(std::pair<request, response>& rr)
 {
-    std::cout << rr.first.id << ": " << rr.first.message.to_string() << std::endl;
+    std::cout << rr.first.id << " " << rr.first.message.to_string() << std::endl;
+    router::route(rr.first, rr.second);
 }

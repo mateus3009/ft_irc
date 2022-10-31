@@ -21,7 +21,7 @@ void socket_server::handle(pollfd& event)
     if (it == _connections.end())
         return ;
 
-    if (event.revents & POLLERR || event.revents & POLLHUP || event.revents & POLLNVAL)
+    if (event.revents & ( POLLERR | POLLHUP | POLLNVAL ))
     {
         it->close();
         _disconnection_subscribers.notify(it->get_id());
@@ -41,15 +41,8 @@ void socket_server::handle(pollfd& event)
         }
     }
 
-    if (event.revents & POLLOUT && it->queued())
-    {
-        it->flush();
-        if (it->queued())
-            event.events |= POLLOUT;
-    }
-
-    if (!it->queued())
-        event.events = POLLIN;
+    if (it->queued())
+    it->flush();
 
     if (it->closing)
     {
