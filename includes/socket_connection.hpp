@@ -12,7 +12,10 @@ class socket_connection : public file_descriptor
 {
     public:
         socket_connection();
+
         socket_connection(const int& fd);
+
+        socket_connection(const socket_connection& other);
 
         ssize_t send(const void* buf, const size_t& n, const int& flags = 0) const;
 

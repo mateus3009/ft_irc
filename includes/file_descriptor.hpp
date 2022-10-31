@@ -5,6 +5,7 @@
 # include <stdexcept>
 # include <cstring>
 # include <cerrno>
+# include <algorithm>
 
 # define INVALID_FD -1
 
@@ -16,7 +17,7 @@ class file_descriptor
     public:
         file_descriptor(const int& fd = INVALID_FD);
 
-        int get_id() const;
+        int get_id(void) const;
 
         void close(void);
 

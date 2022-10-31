@@ -2,7 +2,7 @@
 
 file_descriptor::file_descriptor(const int& fd) : _fd(fd) {}
 
-int file_descriptor::get_id() const { return _fd; }
+int file_descriptor::get_id(void) const { return _fd; }
 
 void file_descriptor::close(void)
 {

@@ -1,5 +1,5 @@
-#ifndef event_listener_HPP
-# define event_listener_HPP
+#ifndef FILE_DESCRIPTOR_MONITOR
+# define FILE_DESCRIPTOR_MONITOR
 
 # include <vector>
 # include <poll.h>
@@ -9,8 +9,9 @@
 # include <cstring>
 
 # include "observer.hpp"
+# include "file_descriptor.hpp"
 
-class event_listener
+class file_descriptor_monitor
 {
     private:
         std::vector<pollfd> _fds;
@@ -20,9 +21,9 @@ class event_listener
         void notify(const pollfd& fd);
 
     public:
-        void add(const int& fd);
+        void add(const file_descriptor& fd);
 
-        void remove(const int& fd);
+        void remove(const file_descriptor& fd);
 
         void listen(void);
 
