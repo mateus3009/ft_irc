@@ -6,7 +6,13 @@ int connection_handler::get_id(void) const { return _connection.get_id(); }
 
 std::vector<message> connection_handler::read(void) { return _input.read(); }
 
-void connection_handler::write(const std::string& str) { _output.write(str); }
+void connection_handler::write(const std::string& str)
+{
+    std::stringstream stream;
+
+    stream << str << "\r\n";
+    _output.write(stream.str());
+}
 
 void connection_handler::flush(void) { _output.flush(); }
 

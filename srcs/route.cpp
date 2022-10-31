@@ -11,7 +11,7 @@ void router::route(request& req, response& res)
 {
     std::map<std::string, router::route_handler>::iterator it = _routes.find(req.message.verb);
     if (it == _routes.end())
-        res.write("Command not found!\r\n");
+        res.write("Command not found! Try /HELP");
     else
         it->second(req, res);
 }
