@@ -100,12 +100,15 @@ message message::parse(const char* data)
 std::string message::to_string(void) const
 {
     std::stringstream stream;
-
-    stream
-        << ':' << source.nickname
-        << '!' << source.username
-        << '@' << source.hostname
-        << ' ' << verb;
+    if (!source.nickname.empty())
+    {
+        stream << ':' << source.nickname;
+        if (!source.username.empty())
+            stream << '!' << source.username;
+        if (!source.hostname.empty())
+            stream << '@' << source.hostname;
+    }
+    stream << ' ' << verb;
     for (std::vector<std::string>::const_iterator it = params.begin(); it != params.end(); ++it)
         stream << " " << *it;
     return stream.str();
