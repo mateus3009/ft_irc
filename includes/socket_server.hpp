@@ -11,6 +11,7 @@
 # include "request.hpp"
 # include "response.hpp"
 # include "observer.hpp"
+# include "connection.hpp"
 
 class socket_server
 {
@@ -19,9 +20,9 @@ class socket_server
 
         std::vector<connection_handler>             _connections;
 
-        publisher<std::pair<const int, response> >  _connection_subscribers;
+        publisher<std::pair<const connection, response> >  _connection_subscribers;
 
-        publisher<std::pair<request, response> >    _message_subscribers;
+        publisher<std::pair<const request, response> >    _message_subscribers;
 
         publisher<const int>                        _disconnection_subscribers;
 
@@ -30,9 +31,9 @@ class socket_server
 
         void handle(pollfd& event);
 
-        void subscribe_to_connection(observer<std::pair<const int, response> >* observer);
+        void subscribe_to_connection(observer<std::pair<const connection, response> >* observer);
 
-        void subscribe_to_message(observer<std::pair<request, response> >* observer);
+        void subscribe_to_message(observer<std::pair<const request, response> >* observer);
 
         void subscribe_to_disconnection(observer<const int>* observer);
 

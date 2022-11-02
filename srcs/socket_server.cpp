@@ -11,9 +11,10 @@ void socket_server::handle(pollfd& event)
 {
     if (event.revents & POLLIN && event.fd == _listener.get_id())
     {
-        connection_handler connection(_listener.accept());
-        _connections.push_back(connection);
-        _connection_subscribers.notify(std::make_pair(connection.get_id(), connection.get_response()));
+        connection_handler con(_listener.accept());
+        _connections.push_back(con);
+        connection c = { .id = con.get_id(), .hostname = con.get_hostname() };
+        _connection_subscribers.notify(std::make_pair(c, con.get_response()));
         return ;
     }
 
@@ -34,15 +35,13 @@ void socket_server::handle(pollfd& event)
         std::vector<message> msgs = it->read();
         for (std::vector<message>::iterator msg = msgs.begin(); msg != msgs.end(); ++msg)
         {
-            request req;
-            req.id      = it->get_id();
-            req.message = *msg;
+            request req = { .id = it->get_id(), .message = *msg };
             _message_subscribers.notify(std::make_pair(req, it->get_response()));
         }
     }
 
     if (it->queued())
-    it->flush();
+        it->flush();
 
     if (it->closing)
     {
@@ -54,13 +53,13 @@ void socket_server::handle(pollfd& event)
 
 }
 
-void socket_server::subscribe_to_connection(observer<std::pair<const int, response> >* observer)
+void socket_server::subscribe_to_connection(observer<std::pair<const connection, response> >* observer)
 {
     if (observer != NULL)
         _connection_subscribers.subscribe(observer);
 }
 
-void socket_server::subscribe_to_message(observer<std::pair<request, response> >* observer)
+void socket_server::subscribe_to_message(observer<std::pair<const request, response> >* observer)
 {
     if (observer != NULL)
         _message_subscribers.subscribe(observer);

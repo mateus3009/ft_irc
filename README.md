@@ -38,4 +38,7 @@ My own internet relay chat server
 [x] Parse de um comando
 [x] Permitir que um cliente entre em um canal
 
-[x] mensagem de leaving esta sendo mandado apenas para o server (poderia ser mandado para todos / grupo especifico ??) 
+[x] mensagem de leaving esta sendo mandado apenas para o server (poderia ser mandado para todos / grupo especifico ??)
+
+[ ] Desconectar o cliente quando ele manda uma mensagem muito longa
+[ ] Disponibilizar o hostname de um novo cliente

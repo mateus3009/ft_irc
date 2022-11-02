@@ -5,6 +5,7 @@
 # include <cstring>
 # include <cerrno>
 # include <netdb.h>
+# include <arpa/inet.h>
 
 # include "file_descriptor.hpp"
 
@@ -20,6 +21,8 @@ class socket_connection : public file_descriptor
         ssize_t send(const void* buf, const size_t& n, const int& flags = 0) const;
 
         ssize_t receive(void* buf, const size_t& n, const int& flags = 0) const;
+
+        std::string get_hostname(void) const;
 
 };
 

@@ -18,6 +18,8 @@ void connection_handler::flush(void) { _output.flush(); }
 
 response connection_handler::get_response(void) { return response(this); }
 
+std::string connection_handler::get_hostname(void) const { return _connection.get_hostname(); }
+
 void connection_handler::close(void)
 {
     if (!_connection.is_valid())

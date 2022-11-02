@@ -10,7 +10,7 @@
 class router
 {
     public:
-        typedef void (*route_handler)(request& req, response& res);
+        typedef void (*route_handler)(const request& req, response& res);
 
     private:
         static std::map<std::string, route_handler> _routes;
@@ -18,7 +18,7 @@ class router
     public:
         static bool add(std::string verb, route_handler handler);
 
-        static void route(request& req, response& res);
-};
+        static void route(const request& req, response& res);
+    };
 
 #endif

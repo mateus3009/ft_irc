@@ -18,7 +18,7 @@ class help
         static bool is_registered;
 
     public:
-        static void route(request& req, response& res);
+        static void route(const request& req, response& res);
 };
 
 #endif

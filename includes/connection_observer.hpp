@@ -6,8 +6,9 @@
 # include "observer.hpp"
 # include "connection_handler.hpp"
 # include "file_descriptor_monitor.hpp"
+# include "connection.hpp"
 
-class connection_observer : public observer<std::pair<const int, response> >
+class connection_observer : public observer<std::pair<const connection, response> >
 {
     private:
         file_descriptor_monitor& _monitor;
@@ -15,7 +16,7 @@ class connection_observer : public observer<std::pair<const int, response> >
     public:
         connection_observer(file_descriptor_monitor& monitor);
 
-        void handle(std::pair<const int, response>& handler);
+        void handle(std::pair<const connection, response>& handler);
 };
 
 #endif

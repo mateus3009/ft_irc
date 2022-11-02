@@ -8,6 +8,7 @@
 # include "output_buffer.hpp"
 # include "message.hpp"
 # include "response.hpp"
+# include "connection.hpp"
 
 class response;
 
@@ -33,6 +34,8 @@ class connection_handler
         void write(const std::string& str);
 
         void flush(void);
+
+        std::string get_hostname(void) const;
 
         response get_response(void);
 

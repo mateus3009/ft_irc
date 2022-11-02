@@ -8,10 +8,10 @@
 # include "request.hpp"
 # include "response.hpp"
 
-class message_observer : public observer<std::pair<request, response> >
+class message_observer : public observer<std::pair<const request, response> >
 {
     public:
-        void handle(std::pair<request, response>& rr);
+        void handle(std::pair<const request, response>& rr);
 };
 
 #endif

@@ -15,3 +15,23 @@ ssize_t socket_connection::receive(void* buf, const size_t& n, const int& flags)
 {
     return ::recv(_fd, buf, n, flags);
 }
+
+std::string socket_connection::get_hostname(void) const
+{
+    sockaddr_storage    storage;
+    socklen_t           socklen = sizeof(storage);
+
+    getpeername(_fd, (sockaddr*)&storage, &socklen);
+
+    char ipstr[INET6_ADDRSTRLEN];
+
+    void* addr;
+    if (((sockaddr*)&storage)->sa_family == AF_INET)
+        addr = &(((sockaddr_in*)&storage)->sin_addr);
+    else
+        addr = &(((sockaddr_in6*)&storage)->sin6_addr);
+
+    inet_ntop(storage.ss_family, addr, ipstr, INET6_ADDRSTRLEN);
+
+    return std::string(ipstr);
+}
