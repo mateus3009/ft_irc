@@ -1,7 +1,8 @@
 #include "message_observer.hpp"
 
+message_observer::message_observer(router* router) : _router(router) {}
+
 void message_observer::handle(std::pair<const request, response>& rr)
 {
-    std::cout << rr.first.id << " " << rr.first.message.to_string() << std::endl;
-    router::route(rr.first, rr.second);
+    _router->call(rr.first, rr.second);
 }

@@ -19,11 +19,7 @@ class client_store
 
         void create(const int& id, const std::string& hostname);
 
-        void remove(const int& id);
-
         client* get(const int& id);
-
-        void rename(const int& id, std::string& nick)
 };
 
 #endif

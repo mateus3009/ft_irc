@@ -17,7 +17,12 @@ void create_irc_context(const char* port)
     disconnection_observer  disconnection_subscription(monitor);
     server.subscribe_to_disconnection(&disconnection_subscription);
 
-    message_observer        message_subscription;
+    help help_command;
+
+    router r;
+    r.add("HELP", &help_command);
+
+    message_observer message_subscription(&r);
     server.subscribe_to_message(&message_subscription);
 
     monitor.listen();

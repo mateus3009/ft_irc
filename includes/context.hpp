@@ -14,6 +14,10 @@
 
 # include "message_observer.hpp"
 
+# include "router.hpp"
+
+# include "help.hpp"
+
 void create_irc_context(const char*port);
 
 #endif

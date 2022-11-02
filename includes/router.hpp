@@ -7,18 +7,18 @@
 # include "request.hpp"
 # include "response.hpp"
 
+struct route { virtual void handle(const request& req, response& res) = 0; };
+
 class router
 {
-    public:
-        typedef void (*route_handler)(const request& req, response& res);
-
     private:
-        static std::map<std::string, route_handler> _routes;
+        std::map<std::string, route*> _routes;
 
     public:
-        static bool add(std::string verb, route_handler handler);
+        bool add(std::string verb, route* route);
 
-        static void route(const request& req, response& res);
-    };
+        void call(const request& req, response& res);
+
+};
 
 #endif

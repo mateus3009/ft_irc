@@ -1,8 +1,6 @@
 #include "help.hpp"
 
-bool help::is_registered = router::add("HELP", help::route);
-
-void help::route(const request& req, response& res)
+void help::handle(const request& req, response& res)
 {
     if (req.message.params.empty())
     {
