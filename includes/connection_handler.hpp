@@ -37,8 +37,6 @@ class connection_handler
 
         std::string get_hostname(void) const;
 
-        response get_response(void);
-
         void close(void);
 
         size_t queued(void) const;

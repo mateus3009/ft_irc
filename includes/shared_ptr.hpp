@@ -48,7 +48,7 @@ class shared_ptr
         shared_ptr& operator=(const shared_ptr& other)
         {
             if (_ref == other._ref)
-                return ;
+                return *this;
 
             if (_ref != NULL && --_ref->count == 0)
             {
@@ -60,6 +60,8 @@ class shared_ptr
 
             if (_ref != NULL)
                 ++_ref->count;
+
+            return *this;
         }
 
         const T* operator->() const
@@ -89,6 +91,12 @@ class shared_ptr
                 throw illegal_access_exception("The pointer has a invalid value!");
             return *_ref->value;
         }
+};
+
+template <typename T, typename R>
+bool operator==(shared_ptr<T> left, R right)
+{
+    return *left == right;
 };
 
 #endif

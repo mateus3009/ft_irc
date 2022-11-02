@@ -12,17 +12,18 @@
 # include "response.hpp"
 # include "observer.hpp"
 # include "connection.hpp"
+# include "shared_ptr.hpp"
 
 class socket_server
 {
     private:
-        socket_listener&                            _listener;
+        socket_listener&                                     _listener;
 
-        std::vector<connection_handler>             _connections;
+        std::vector<shared_ptr<connection_handler> >        _connections;
 
-        publisher<std::pair<const connection, response> >  _connection_subscribers;
+        publisher<std::pair<const connection, response> >   _connection_subscribers;
 
-        publisher<std::pair<const request, response> >    _message_subscribers;
+        publisher<std::pair<const request, response> >       _message_subscribers;
 
         publisher<const int>                        _disconnection_subscribers;
 

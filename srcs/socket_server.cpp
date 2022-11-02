@@ -11,42 +11,44 @@ void socket_server::handle(pollfd& event)
 {
     if (event.revents & POLLIN && event.fd == _listener.get_id())
     {
-        connection_handler con(_listener.accept());
+        shared_ptr<connection_handler> con(new connection_handler(_listener.accept()));
         _connections.push_back(con);
-        connection c = { .id = con.get_id(), .hostname = con.get_hostname() };
-        _connection_subscribers.notify(std::make_pair(c, con.get_response()));
+        connection c = { .id = con->get_id(), .hostname = con->get_hostname() };
+        _connection_subscribers.notify(std::make_pair(c, response(con)));
         return ;
     }
 
-    std::vector<connection_handler>::iterator it = std::find(_connections.begin(), _connections.end(), event.fd);
+    std::vector<shared_ptr<connection_handler> >::iterator it = std::find(_connections.begin(), _connections.end(), event.fd);
     if (it == _connections.end())
         return ;
 
+    shared_ptr<connection_handler> con = *it;
+
     if (event.revents & ( POLLERR | POLLHUP | POLLNVAL ))
     {
-        it->close();
-        _disconnection_subscribers.notify(it->get_id());
+        con->close();
+        _disconnection_subscribers.notify(con->get_id());
         _connections.erase(it);
         return ;
     }
 
     if (event.revents & POLLIN)
     {
-        std::vector<message> msgs = it->read();
+        std::vector<message> msgs = con->read();
         for (std::vector<message>::iterator msg = msgs.begin(); msg != msgs.end(); ++msg)
         {
-            request req = { .id = it->get_id(), .message = *msg };
-            _message_subscribers.notify(std::make_pair(req, it->get_response()));
+            request req = { .id = con->get_id(), .message = *msg };
+            _message_subscribers.notify(std::make_pair(req, response(con)));
         }
     }
 
-    if (it->queued())
-        it->flush();
+    if (con->queued())
+        con->flush();
 
-    if (it->closing)
+    if (con->closing)
     {
-        it->close();
-        _disconnection_subscribers.notify(it->get_id());
+        con->close();
+        _disconnection_subscribers.notify(con->get_id());
         _connections.erase(it);
         return ;
     }

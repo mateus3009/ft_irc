@@ -1,6 +1,6 @@
 #include "connection_handler.hpp"
 
-connection_handler::connection_handler(const socket_connection& connection) : _connection(connection), _input(&connection), _output(&connection), closing(false) {}
+connection_handler::connection_handler(const socket_connection& connection) : _connection(connection), _input(&_connection), _output(&_connection), closing(false) {}
 
 int connection_handler::get_id(void) const { return _connection.get_id(); }
 
@@ -15,8 +15,6 @@ void connection_handler::write(const std::string& str)
 }
 
 void connection_handler::flush(void) { _output.flush(); }
-
-response connection_handler::get_response(void) { return response(this); }
 
 std::string connection_handler::get_hostname(void) const { return _connection.get_hostname(); }
 
