@@ -7,16 +7,19 @@
 # include "connection_handler.hpp"
 # include "file_descriptor_monitor.hpp"
 # include "connection.hpp"
+# include "client_store.hpp"
 
 class connection_observer : public observer<std::pair<const connection, response> >
 {
     private:
         file_descriptor_monitor& _monitor;
 
-    public:
-        connection_observer(file_descriptor_monitor& monitor);
+        client_store& _store;
 
-        void handle(std::pair<const connection, response>& handler);
+    public:
+        connection_observer(file_descriptor_monitor& monitor, client_store& store);
+
+        void handle(std::pair<const connection, response>& event);
 };
 
 #endif

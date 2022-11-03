@@ -7,19 +7,28 @@
 # include "client.hpp"
 # include "response.hpp"
 
+class client;
+
 class client_store
 {
     private:
-        static client_store     _store;
-
         std::map<int, client>   _clients;
 
     public:
-        static client_store* get(void);
+        void add(const int& id, const std::string& hostname);
 
-        void create(const int& id, const std::string& hostname);
+        client* find(const int& id);
 
-        client* get(const int& id);
+        client* find(const std::string& nickname);
+
+        void remove(const int& id);
+};
+
+struct client_finder
+{
+    std::string nickname;
+
+    bool operator()(const std::pair<int, client>& p);
 };
 
 #endif

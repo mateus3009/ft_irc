@@ -1,7 +1,13 @@
 #include "help.hpp"
 
+help::help(client_store& store) : _store(store) {}
+
 void help::handle(const request& req, response& res)
 {
+    client* c = _store.find(req.id);
+
+    std::cout << "id: " << c->get_id() << std::endl;
+
     if (req.message.params.empty())
     {
         res.write(":server 704 val * :** Help System **");

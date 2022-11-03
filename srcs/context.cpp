@@ -11,13 +11,15 @@ void create_irc_context(const char* port)
     event_observer event_subscription(server);
     monitor.subscribe(&event_subscription);
 
-    connection_observer connection_subscription(monitor);
+    client_store client_s;
+
+    connection_observer connection_subscription(monitor, client_s);
     server.subscribe_to_connection(&connection_subscription);
 
-    disconnection_observer  disconnection_subscription(monitor);
+    disconnection_observer  disconnection_subscription(monitor, client_s);
     server.subscribe_to_disconnection(&disconnection_subscription);
 
-    help help_command;
+    help help_command(client_s);
 
     router r;
     r.add("HELP", &help_command);

@@ -18,6 +18,8 @@
 
 # include "help.hpp"
 
+# include "client_store.hpp"
+
 void create_irc_context(const char*port);
 
 #endif
