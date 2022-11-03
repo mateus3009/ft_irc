@@ -6,7 +6,7 @@ void help::handle(const request& req, response& res)
 {
     client* c = _store.find(req.id);
 
-    std::cout << "id: " << c->get_id() << std::endl;
+    std::cout << "nickname: " << c->get_nickname() << std::endl;
 
     if (req.message.params.empty())
     {

@@ -1,6 +1,6 @@
 #include "context.hpp"
 
-void create_irc_context(const char* port)
+void create_irc_context(const char* port, const char* password)
 {
     socket_listener listener(port);
     socket_server   server(listener);
@@ -19,10 +19,16 @@ void create_irc_context(const char* port)
     disconnection_observer  disconnection_subscription(monitor, client_s);
     server.subscribe_to_disconnection(&disconnection_subscription);
 
-    help help_command(client_s);
-
     router r;
+
+    help help_command(client_s);
     r.add("HELP", &help_command);
+
+    nick nick_command(client_s);
+    r.add("NICK", &nick_command);
+
+    pass pass_command(client_s, password);
+    r.add("PASS", &pass_command);
 
     message_observer message_subscription(&r);
     server.subscribe_to_message(&message_subscription);

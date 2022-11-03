@@ -32,6 +32,8 @@ class client
 
         client_store*               _store;
 
+        bool                        _is_autorized;
+
     public:
         client(const int& id, const std::string& hostname, client_store* store);
 
@@ -52,6 +54,10 @@ class client
         void add_mode(const int& mode);
 
         void remove_mode(const int& mode);
+
+        bool is_authorized(void) const;
+
+        void authorize(void);
 
 };
 

@@ -22,6 +22,7 @@ class client_store
         client* find(const std::string& nickname);
 
         void remove(const int& id);
+
 };
 
 struct client_finder

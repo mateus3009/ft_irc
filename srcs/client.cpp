@@ -7,7 +7,8 @@ client::client(const int& id, const std::string& hostname, client_store* store) 
     _hostname(hostname),
     _modes(0),
    // _channels(),
-    _store(store) {}
+    _store(store),
+    _is_autorized(false) {}
 
 int client::get_id(void) const { return _id; }
 
@@ -32,6 +33,10 @@ int client::get_modes(void) const { return _modes; }
 void client::add_mode(const int& mode) { _modes |= mode; }
 
 void client::remove_mode(const int& mode) { _modes &= ~mode; }
+
+bool client::is_authorized(void) const { return _is_autorized; }
+
+void client::authorize(void) { _is_autorized = true; }
 
 bool operator==(const client& c, const std::string& nickname)
 {

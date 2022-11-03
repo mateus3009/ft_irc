@@ -20,6 +20,10 @@
 
 # include "client_store.hpp"
 
-void create_irc_context(const char*port);
+# include "nick.hpp"
+
+# include "pass.hpp"
+
+void create_irc_context(const char*port, const char* password);
 
 #endif
