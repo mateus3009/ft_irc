@@ -30,6 +30,12 @@ void create_irc_context(const char* port, const char* password)
     pass pass_command(client_s, password);
     r.add("PASS", &pass_command);
 
+    user user_command(client_s);
+    r.add("USER", &user_command);
+
+    quit quit_command;
+    r.add("QUIT", &quit_command);
+
     message_observer message_subscription(&r);
     server.subscribe_to_message(&message_subscription);
 

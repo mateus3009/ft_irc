@@ -11,4 +11,4 @@ void file_descriptor::close(void)
     _fd = INVALID_FD;
 }
 
-bool file_descriptor::is_valid(void) const { return _fd == INVALID_FD; }
+bool file_descriptor::is_valid(void) const { return _fd != INVALID_FD; }

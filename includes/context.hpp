@@ -24,6 +24,10 @@
 
 # include "pass.hpp"
 
+# include "user.hpp"
+
+# include "quit.hpp"
+
 void create_irc_context(const char*port, const char* password);
 
 #endif
