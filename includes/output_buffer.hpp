@@ -7,8 +7,6 @@
 # include "socket_connection.hpp"
 # include "message.hpp"
 
-# define BUFFER_SIZE 512
-
 class output_buffer
 {
     private:

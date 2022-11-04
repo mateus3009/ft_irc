@@ -6,7 +6,7 @@
 # include "socket_connection.hpp"
 # include "message.hpp"
 
-# define BUFFER_SIZE 512
+# define BUFFER_SIZE 1024
 
 class input_buffer
 {
@@ -21,6 +21,8 @@ class input_buffer
         input_buffer(const socket_connection* connection);
 
         std::vector<message> read(void);
+
+        bool full(void) const;
 
 };
 

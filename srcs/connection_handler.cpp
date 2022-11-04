@@ -27,4 +27,6 @@ void connection_handler::close(void)
 
 size_t connection_handler::queued(void) const { return _output.queued(); }
 
+bool connection_handler::full(void) const { return _input.full(); }
+
 bool operator==(const connection_handler& l, const int& r) { return l.get_id() == r; }

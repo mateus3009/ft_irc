@@ -46,3 +46,4 @@ std::vector<message> input_buffer::read(void)
     return messages;
 }
 
+bool input_buffer::full(void) const { return _position == BUFFER_SIZE; }

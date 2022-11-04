@@ -41,6 +41,8 @@ class connection_handler
 
         size_t queued(void) const;
 
+        bool full(void) const;
+
 };
 
 bool operator==(const connection_handler& l, const int& r);

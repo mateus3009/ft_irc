@@ -45,7 +45,7 @@ void socket_server::handle(pollfd& event)
     if (con->queued())
         con->flush();
 
-    if (con->closing)
+    if (con->closing || con->full())
     {
         con->close();
         _disconnection_subscribers.notify(con->get_id());
