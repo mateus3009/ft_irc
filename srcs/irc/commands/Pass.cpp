@@ -6,7 +6,8 @@ void Pass::handle(
     const Message&      msg,
     shared_ptr<Client>& client,
     ClientStore&,
-    ChannelStore&)
+    ChannelStore&,
+    IrcServer& ircServer)
 {
     if (client->hasAnyModes(MODE_USER_AUTORIZED))
     {
@@ -20,7 +21,7 @@ void Pass::handle(
         return ;
     }
 
-    if (msg.params.front() != "SENHA")
+    if (msg.params.front() != ircServer.getPassword())
     {
         client->send(Message() << ERR_PASSWDMISMATCH << client->getNickname() << "Password incorrect");
         client->send(Message() << Verb("ERROR") << "Password incorrect");

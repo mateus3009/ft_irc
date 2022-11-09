@@ -3,6 +3,7 @@
 #include "irc/Router.hpp"
 #include "irc/Client.hpp"
 #include "irc/Channel.hpp"
+#include "irc/IrcServer.hpp"
 #include "irc/commands/Help.hpp"
 #include <iostream>
 
@@ -15,10 +16,14 @@ int main(int argc, const char** argv)
     }
     ClientStore clientStore;
     ChannelStore channelStore;
+    IrcServer ircServer;
+    ircServer.setPassword(argv[2]);
+    ircServer.setServerName("42irc");
     Router::setNotFound(Help::handle);
     Router::setClientStore(&clientStore);
     Router::setChannelStore(&channelStore);
-    Server<IrcConnection> server("localhost", "12345");
+    Router::setIrcServer(&ircServer);
+    Server<IrcConnection> server("localhost", argv[1]);
 
     server.listen();
     return 0;

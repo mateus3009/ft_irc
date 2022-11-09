@@ -6,7 +6,8 @@ void Ping::handle(
     const Message&      msg,
     shared_ptr<Client>& client,
     ClientStore&,
-    ChannelStore&)
+    ChannelStore&,
+    IrcServer&)
 {
     if (msg.params.empty())
     {

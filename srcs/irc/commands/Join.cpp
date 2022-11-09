@@ -6,7 +6,8 @@ void Join::handle(
     const Message&      msg,
     shared_ptr<Client>& client,
     ClientStore&,
-    ChannelStore&       channelStore)
+    ChannelStore&       channelStore,
+    IrcServer&)
 {
     if (!client->hasAnyModes(MODE_USER_REGISTERED))
     {

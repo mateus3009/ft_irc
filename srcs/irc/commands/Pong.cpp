@@ -6,7 +6,8 @@ void Pong::handle(
     const Message&      msg,
     shared_ptr<Client>& client,
     ClientStore&        clientStore,
-    ChannelStore&)
+    ChannelStore&,
+    IrcServer&)
 {
     if (msg.params.empty())
     {

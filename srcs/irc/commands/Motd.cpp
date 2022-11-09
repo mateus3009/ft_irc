@@ -6,7 +6,8 @@ void Motd::handle(
     const Message&,
     shared_ptr<Client>& client,
     ClientStore&,
-    ChannelStore&)
+    ChannelStore&,
+    IrcServer& ircServer)
 {
     if (!client->hasAnyModes(MODE_USER_REGISTERED))
     {
@@ -14,5 +15,13 @@ void Motd::handle(
         return ;
     }
 
-    client->send(Message() << ERR_NOMOTD << "MOTD File is missing");
+    if (ircServer.getMotd().empty())
+    {
+        client->send(Message() << ERR_NOMOTD << "MOTD File is missing");
+        return ;
+    }
+
+    client->send(Message() << RPL_MOTDSTART << std::string("- ").append(ircServer.getServerName()).append(" Message of the day -"));
+    client->send(Message() << RPL_MOTD << ircServer.getMotd());
+    client->send(Message() << RPL_ENDOFMOTD << "End of /MOTD command.");
 }

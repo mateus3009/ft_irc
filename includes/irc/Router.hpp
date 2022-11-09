@@ -5,11 +5,14 @@
 
 # include "Client.hpp"
 # include "Channel.hpp"
+# include "IrcServer.hpp"
 # include "commands/NumericReply.hpp"
 
 class Client;
 class ClientStore;
 class ChannelStore;
+
+
 
 class Router
 {
@@ -18,15 +21,18 @@ class Router
             const Message&      msg,
             shared_ptr<Client>& client,
             ClientStore&        clientStore,
-            ChannelStore&       channelStore);
+            ChannelStore&       channelStore,
+            IrcServer&          server);
     public:
-        static ClientStore* _clientStore;
+        static ClientStore*     _clientStore;
 
-        static ChannelStore* _channelStore;
+        static ChannelStore*    _channelStore;
 
-        static std::map<std::string, Command> _commands;
+        static IrcServer*       _ircServer;
 
-        static Command _notFound;
+        static std::map<std::string, Command>   _commands;
+
+        static Command          _notFound;
 
     public:
         static void route(const Message& msg, shared_ptr<Client> client);
@@ -34,6 +40,8 @@ class Router
         static void setClientStore(ClientStore* clientStore);
 
         static void setChannelStore(ChannelStore* channelStore);
+
+        static void setIrcServer(IrcServer* ircServer);
 
         static void setNotFound(Command c);
 

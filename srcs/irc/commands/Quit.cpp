@@ -6,7 +6,8 @@ void Quit::handle(
     const Message&      msg,
     shared_ptr<Client>& client,
     ClientStore&        clientStore,
-    ChannelStore&)
+    ChannelStore&,
+    IrcServer&)
 {
     client->send(Message() << client->getSource() << Verb("ERROR") << "Bye!");
     client->close();

@@ -14,7 +14,8 @@ struct Join
         const Message&      msg,
         shared_ptr<Client>& client,
         ClientStore&        clientStore,
-        ChannelStore&       channelStore);
+        ChannelStore&       channelStore,
+        IrcServer&          server);
 
 };
 
