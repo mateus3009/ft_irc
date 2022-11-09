@@ -1,15 +1,25 @@
+#include "network/Server.hpp"
+#include "irc/IrcConnection.hpp"
+#include "irc/Router.hpp"
+#include "irc/Client.hpp"
+#include "irc/Channel.hpp"
+#include "irc/commands/Help.hpp"
 #include <iostream>
-#include "context.hpp"
 
-int main(int argc, char** argv)
+int main(int argc, const char** argv)
 {
     if (argc < 3)
     {
-        std::cerr << "Usage: " << argv[0] << " <port> <pass>" << std::endl;
-        return (1);
+        std::cout << "Usage: " << argv[1] << " <port> <pass>" << std::endl;
+        return 1;
     }
+    ClientStore clientStore;
+    ChannelStore channelStore;
+    Router::setNotFound(Help::handle);
+    Router::setClientStore(&clientStore);
+    Router::setChannelStore(&channelStore);
+    Server<IrcConnection> server("localhost", "12345");
 
-    create_irc_context(argv[1], argv[2]);
-
-    return (0);
+    server.listen();
+    return 0;
 }

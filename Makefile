@@ -9,7 +9,7 @@ FILE_SOURCE		:= $(filter %.cpp, $(shell find $(DIRECTORY_SOURCE) -type f))
 OBJECTS_SOURCE	:= $(addprefix $(DIRECTORY_TARGET)/, $(FILE_SOURCE:.cpp=.o))
 
 COMPILER		:= clang++
-COMPILER_FLAGS	:= -Wall -Wextra -Werror -g --std=c++98
+COMPILER_FLAGS	:= -Wall -Wextra -Werror -g --std=c++98 -D_GLIBCXX_DEBUG
 
 .PHONY : all clean fclean make re bonus
 .SILENT : all clean fclean make re bonus
