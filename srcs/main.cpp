@@ -11,7 +11,7 @@ int main(int argc, const char** argv)
 {
     if (argc < 3)
     {
-        std::cout << "Usage: " << argv[1] << " <port> <pass>" << std::endl;
+        std::cout << "Usage: " << argv[0] << " <port> <pass>" << std::endl;
         return 1;
     }
     ClientStore clientStore;

@@ -4,7 +4,7 @@ const bool Pass::isRegistered = Router::add("PASS", Pass::handle);
 
 void Pass::handle(
     const Message&      msg,
-    shared_ptr<Client>& client,
+    shared_ptr<Client>  client,
     ClientStore&,
     ChannelStore&,
     IrcServer& ircServer)

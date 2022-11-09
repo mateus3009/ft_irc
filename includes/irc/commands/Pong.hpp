@@ -9,7 +9,7 @@ struct Pong
 
     static void handle(
         const Message&      msg,
-        shared_ptr<Client>& client,
+        shared_ptr<Client>  client,
         ClientStore&        clientStore,
         ChannelStore&       channelStore,
         IrcServer&          server);

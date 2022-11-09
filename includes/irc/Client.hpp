@@ -92,7 +92,7 @@ class ClientStore
 
         void broadcast(const Message& msg);
 
-        void remove(const shared_ptr<Client>& client);
+        void remove(shared_ptr<Client> client);
 
         struct ClientNotFoundException : public std::runtime_error
         {
@@ -114,7 +114,7 @@ class ClientStore
 
         struct ClientPredicate
         {
-            const shared_ptr<Client>& client;
+            shared_ptr<Client> client;
 
             bool operator()(std::pair<int, shared_ptr<Client> > item);
         };

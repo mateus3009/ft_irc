@@ -19,7 +19,7 @@ struct Membership : public Modes
         shared_ptr<Client>  _client;
 
     public:
-        Membership(const shared_ptr<Client>& client, const unsigned int& modes = 0);
+        Membership(shared_ptr<Client> client, const unsigned int& modes = 0);
 
         shared_ptr<Client> getClient(void) const;
 
@@ -61,9 +61,9 @@ class Channel : public Modes
 
         void setKey(const std::string& key);
 
-        shared_ptr<Membership> add(shared_ptr<Client>& client);
+        shared_ptr<Membership> add(shared_ptr<Client> client);
 
-        shared_ptr<Membership> find(const shared_ptr<Client>& client);
+        shared_ptr<Membership> find(shared_ptr<Client> client);
 
         void remove(shared_ptr<Membership>& client);
 

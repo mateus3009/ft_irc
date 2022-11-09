@@ -9,4 +9,8 @@ void IrcConnection::send(const Message& msg) { _proxy.send(msg.toString()); }
 
 void IrcConnection::accept(const Message& msg) { Router::route(msg, _client); }
 
-void IrcConnection::close(void) { _proxy.close(); }
+void IrcConnection::close(void)
+{
+    Router::_clientStore->remove(_client);
+    _proxy.close();
+}

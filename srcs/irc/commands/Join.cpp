@@ -4,7 +4,7 @@ const bool Join::isRegistered = Router::add("JOIN", Join::handle);
 
 void Join::handle(
     const Message&      msg,
-    shared_ptr<Client>& client,
+    shared_ptr<Client>  client,
     ClientStore&,
     ChannelStore&       channelStore,
     IrcServer&)

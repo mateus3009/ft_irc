@@ -4,7 +4,7 @@ const bool Pong::isRegistered = Router::add("PONG", Pong::handle);
 
 void Pong::handle(
     const Message&      msg,
-    shared_ptr<Client>& client,
+    shared_ptr<Client>  client,
     ClientStore&        clientStore,
     ChannelStore&,
     IrcServer&)

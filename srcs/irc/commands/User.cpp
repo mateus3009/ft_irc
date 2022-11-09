@@ -4,7 +4,7 @@ const bool User::isRegistered = Router::add("USER", User::handle);
 
 void User::handle(
     const Message&      msg,
-    shared_ptr<Client>& client,
+    shared_ptr<Client>  client,
     ClientStore&,
     ChannelStore&,
     IrcServer&)

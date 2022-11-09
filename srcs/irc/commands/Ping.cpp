@@ -4,7 +4,7 @@ const bool Ping::isRegistered = Router::add("PING", Ping::handle);
 
 void Ping::handle(
     const Message&      msg,
-    shared_ptr<Client>& client,
+    shared_ptr<Client>  client,
     ClientStore&,
     ChannelStore&,
     IrcServer&)

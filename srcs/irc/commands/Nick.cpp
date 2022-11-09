@@ -4,7 +4,7 @@ const bool Nick::isRegistered = Router::add("NICK", Nick::handle);
 
 void Nick::handle(
     const Message&      msg,
-    shared_ptr<Client>& client,
+    shared_ptr<Client>  client,
     ClientStore&        clientStore,
     ChannelStore&,
     IrcServer&)

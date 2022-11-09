@@ -4,7 +4,7 @@ const bool Motd::isRegistered = Router::add("MOTD", Motd::handle);
 
 void Motd::handle(
     const Message&,
-    shared_ptr<Client>& client,
+    shared_ptr<Client>  client,
     ClientStore&,
     ChannelStore&,
     IrcServer& ircServer)

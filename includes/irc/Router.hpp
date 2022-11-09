@@ -19,7 +19,7 @@ class Router
     public:
         typedef void (*Command)(
             const Message&      msg,
-            shared_ptr<Client>& client,
+            shared_ptr<Client>  client,
             ClientStore&        clientStore,
             ChannelStore&       channelStore,
             IrcServer&          server);

@@ -2,7 +2,7 @@
 
 /* Membership */
 
-Membership::Membership(const shared_ptr<Client>& client, const unsigned int& modes) : Modes(modes), _client(client) {}
+Membership::Membership(shared_ptr<Client> client, const unsigned int& modes) : Modes(modes), _client(client) {}
 
 shared_ptr<Client> Membership::getClient(void) const { return _client; }
 
@@ -39,7 +39,7 @@ std::string Channel::getKey(void) const { return _key; }
 
 void Channel::setKey(const std::string& key) { _key = key; }
 
-shared_ptr<Membership> Channel::add(shared_ptr<Client>& client)
+shared_ptr<Membership> Channel::add(shared_ptr<Client> client)
 {
     shared_ptr<Membership> membership = new Membership(client);
     if (!_memberships.insert(membership).second)
@@ -47,7 +47,7 @@ shared_ptr<Membership> Channel::add(shared_ptr<Client>& client)
     return membership;
 }
 
-shared_ptr<Membership> Channel::find(const shared_ptr<Client>& client)
+shared_ptr<Membership> Channel::find(shared_ptr<Client> client)
 {
     Channel::iterator it = std::find(_memberships.begin(), _memberships.end(), client);
     if (it == _memberships.end())

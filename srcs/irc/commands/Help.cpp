@@ -4,7 +4,7 @@ const bool Help::isRegistered = Router::add("HELP", Help::handle);
 
 void Help::handle(
     const Message&      msg,
-    shared_ptr<Client>& client,
+    shared_ptr<Client>  client,
     ClientStore&,
     ChannelStore&,
     IrcServer&)

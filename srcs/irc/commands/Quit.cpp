@@ -4,7 +4,7 @@ const bool Quit::isRegistered = Router::add("QUIT", Quit::handle);
 
 void Quit::handle(
     const Message&      msg,
-    shared_ptr<Client>& client,
+    shared_ptr<Client>  client,
     ClientStore&        clientStore,
     ChannelStore&,
     IrcServer&)
@@ -13,8 +13,9 @@ void Quit::handle(
     client->close();
 
     std::string reason;
-    if (!msg.empty())
+    if (!msg.params.empty())
         reason = *msg.params.begin();
 
-    clientStore.broadcast(Message() << client->getSource() << Verb("QUIT") << std::string("Quit: ").append(reason));
+    if (client->hasAnyModes(MODE_USER_REGISTERED))
+        clientStore.broadcast(Message() << client->getSource() << Verb("QUIT") << std::string("Quit: ").append(reason));
 }

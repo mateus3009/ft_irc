@@ -4,7 +4,7 @@ const bool Topic::isRegistered = Router::add("TOPIC", Topic::handle);
 
 void Topic::handle(
     const Message&      msg,
-    shared_ptr<Client>& client,
+    shared_ptr<Client>  client,
     ClientStore&,
     ChannelStore&       channelStore,
     IrcServer&)

@@ -4,7 +4,7 @@ const bool Part::isRegistered = Router::add("PART", Part::handle);
 
 void Part::handle(
     const Message&      msg,
-    shared_ptr<Client>& client,
+    shared_ptr<Client>  client,
     ClientStore&,
     ChannelStore&       channelStore,
     IrcServer&)

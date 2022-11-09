@@ -47,7 +47,6 @@ void Client::send(const Message& msg) { _connection.send(msg); }
 
 void Client::close(void)
 {
-    _store.remove(this);
     _connection.close();
 }
 
@@ -106,7 +105,7 @@ void ClientStore::broadcast(const Message& msg)
     std::for_each(_clients.begin(), _clients.end(), s);
 }
 
-void ClientStore::remove(const shared_ptr<Client>& client)
+void ClientStore::remove(shared_ptr<Client> client)
 {
     ClientPredicate p = { .client = client };
     ClientStore::iterator it = std::find_if(_clients.begin(), _clients.end(), p);
