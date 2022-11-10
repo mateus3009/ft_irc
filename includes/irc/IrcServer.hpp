@@ -14,6 +14,8 @@ class IrcServer
 
         std::string _serverName;
 
+        std::string _welcomeMessage;
+
     public:
         IrcServer(void);
 
@@ -28,6 +30,10 @@ class IrcServer
         std::string getServerName(void) const;
 
         void setServerName(const std::string& serverName);
+
+        std::string getWelcomeMessage(void) const;
+
+        void setWelcomeMessage(const std::string& welcomeMessage);
 
         Message::Source getSource(void) const;
 };

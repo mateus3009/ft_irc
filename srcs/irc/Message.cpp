@@ -1,5 +1,21 @@
 #include "irc/Message.hpp"
 
+std::string Message::Source::toString(void) const
+{
+    std::stringstream stream;
+
+    if (!this->nickname.empty())
+    {
+        stream << ':' << this->nickname;
+        if (!this->username.empty())
+            stream << '!' << this->username;
+        if (!this->hostname.empty())
+            stream << '@' << this->hostname;
+        stream << ' ';
+    }
+    return stream.str();
+}
+
 Message::Message(void) {}
 
 Message::Message(const std::string& str)
@@ -114,15 +130,7 @@ std::string Message::toString(void) const
 {
     std::stringstream stream;
 
-    if (!this->source.nickname.empty())
-    {
-        stream << ':' << this->source.nickname;
-        if (!this->source.username.empty())
-            stream << '!' << this->source.username;
-        if (!this->source.hostname.empty())
-            stream << '@' << this->source.hostname;
-        stream << ' ';
-    }
+    stream << this->source.toString();
 
     stream << this->verb;
 

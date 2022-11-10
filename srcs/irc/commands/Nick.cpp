@@ -22,11 +22,11 @@ void Nick::handle(
     {
         client->setNickname(nickname);
     }
-    catch(const Client::AlphaNumericConstraintViolationException&)
+    catch(const Client::AlphaNumericConstraintViolationException& e)
     {
         client->send(Message() << ircServer.getSource() << ERR_ERRONEUSNICKNAME << nickname << "Erroneus nickname");
     }
-    catch(const Client::NicknameIsAlreadyInUseException&)
+    catch(const Client::NicknameIsAlreadyInUseException& e)
     {
         client->send(Message() << ircServer.getSource() << ERR_NICKNAMEINUSE  << nickname << "Nickname is already in use");
     }

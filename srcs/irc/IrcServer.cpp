@@ -14,6 +14,10 @@ std::string IrcServer::getServerName(void) const { return _serverName; }
 
 void IrcServer::setServerName(const std::string& serverName) { _serverName = serverName; }
 
+std::string IrcServer::getWelcomeMessage(void) const { return _welcomeMessage; }
+
+void IrcServer::setWelcomeMessage(const std::string& welcomeMessage) { _welcomeMessage = welcomeMessage; }
+
 Message::Source IrcServer::getSource(void) const
 {
     return (Message::Source) { .nickname = _serverName };

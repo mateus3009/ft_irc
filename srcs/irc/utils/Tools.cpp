@@ -32,3 +32,8 @@ std::vector<std::string> split(const std::string& str, const char delimiter)
         parts.push_back(part);
     return parts;
 }
+
+std::string operator+(const std::string& l, const std::string& r)
+{
+    return std::string(l).append(r);
+}

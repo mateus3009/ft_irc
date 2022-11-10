@@ -4,9 +4,11 @@ Client::Client(const std::string& hostname, IrcConnection& connection, ClientSto
 
 std::string Client::getNickname(void) const { return _nickname; }
 
+static bool validNicknameCharacter(unsigned char c) { return ::isalnum(c) || c == '-' || c == '_'; }
+
 void Client::setNickname(const std::string& nickname)
 {
-    if (!allOf(nickname.begin(), nickname.end(), isalnum))
+    if (!allOf(nickname.begin(), nickname.end(), validNicknameCharacter))
         throw Client::AlphaNumericConstraintViolationException("The nickname must be alphanumeric!");
 
     try
@@ -28,7 +30,7 @@ void Client::setUsername(const std::string& username)
     if (!_username.empty())
         throw Client::UsernameIsAlreadyDefinedException("The username is already set! You can't change it anymore!");
 
-    if (!allOf(username.begin(), username.end(), isalnum))
+    if (!allOf(username.begin(), username.end(), validNicknameCharacter))
         throw Client::AlphaNumericConstraintViolationException("The username must be alphanumeric!");
 
     _username = username;

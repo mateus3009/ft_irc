@@ -26,4 +26,6 @@ std::string unixTimestamp(void);
 
 std::vector<std::string> split(const std::string& str, const char delimiter = ',');
 
+std::string operator+(const std::string& l, const std::string& r);
+
 #endif

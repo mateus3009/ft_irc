@@ -17,6 +17,8 @@ struct Message
 
         std::string             hostname;
 
+        std::string toString(void) const;
+
     } source;
 
     std::string                 verb;

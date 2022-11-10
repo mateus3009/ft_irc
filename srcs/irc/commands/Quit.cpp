@@ -17,5 +17,5 @@ void Quit::handle(
         reason = *msg.params.begin();
 
     if (client->hasAnyModes(MODE_USER_REGISTERED))
-        clientStore.broadcast(Message() << client->getSource() << Verb("QUIT") << std::string("Quit: ").append(reason));
+        clientStore.broadcast(Message() << client->getSource() << Verb("QUIT") << "Quit: " + reason);
 }

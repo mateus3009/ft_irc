@@ -11,7 +11,7 @@ void Motd::handle(
 {
     if (!client->hasAnyModes(MODE_USER_REGISTERED))
     {
-        client->send(Message() << ERR_NOTREGISTERED << "You have not registered");
+        client->send(Message() << ircServer.getSource() << ERR_NOTREGISTERED << "You have not registered");
         return ;
     }
 
@@ -25,7 +25,7 @@ void Motd::showMotd(
 {
     if (ircServer.getMotd().empty())
     {
-        client->send(Message() << ERR_NOMOTD << "MOTD File is missing");
+        client->send(Message() << ircServer.getSource() << ERR_NOMOTD << "MOTD File is missing");
         return ;
     }
 
