@@ -2,6 +2,7 @@
 # define USER_HPP
 
 # include "../Router.hpp"
+# include "Motd.hpp"
 
 struct User
 {

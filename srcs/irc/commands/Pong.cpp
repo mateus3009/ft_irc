@@ -7,11 +7,11 @@ void Pong::handle(
     shared_ptr<Client>  client,
     ClientStore&        clientStore,
     ChannelStore&,
-    IrcServer&)
+    IrcServer& ircServer)
 {
     if (msg.params.empty())
     {
-        client->send(Message() << ERR_NEEDMOREPARAMS << client->getNickname() << "PONG" << "Not enough parameters");
+        client->send(Message() << ircServer.getSource() << ERR_NEEDMOREPARAMS << client->getNickname() << "PONG" << "Not enough parameters");
         return ;
     }
 
@@ -19,10 +19,10 @@ void Pong::handle(
 
     if (token != "42")
     {
-        client->send(Message() << Verb("ERROR") << "Wrong token!");
+        client->send(Message() << ircServer.getSource() << Verb("ERROR") << "Wrong token!");
         client->close();
 
-        clientStore.broadcast(Message() << client->getSource() << Verb("QUIT") << "Quit: Issued a PONG command with invalid token");
+        clientStore.broadcast(Message() << ircServer.getSource() << client->getSource() << Verb("QUIT") << "Quit: Issued a PONG command with invalid token");
     }
 
 }

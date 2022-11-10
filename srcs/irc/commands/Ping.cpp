@@ -7,13 +7,13 @@ void Ping::handle(
     shared_ptr<Client>  client,
     ClientStore&,
     ChannelStore&,
-    IrcServer&)
+    IrcServer& ircServer)
 {
     if (msg.params.empty())
     {
-        client->send(Message() << ERR_NEEDMOREPARAMS << client->getNickname() << "PING" << "Not enough parameters");
+        client->send(Message() << ircServer.getSource() << ERR_NEEDMOREPARAMS << client->getNickname() << "PING" << "Not enough parameters");
         return ;
     }
 
-    client->send(Message() << Verb("PONG") << ":server" << msg.params.front());
+    client->send(Message() << ircServer.getSource() << Verb("PONG") << ":server" << msg.params.front());
 }

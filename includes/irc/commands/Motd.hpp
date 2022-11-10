@@ -13,6 +13,11 @@ struct Motd
         ClientStore&        clientStore,
         ChannelStore&       channelStore,
         IrcServer&          server);
+
+    static void showMotd(
+        shared_ptr<Client>  client,
+        IrcServer&          server);
+
 };
 
 #endif

@@ -7,9 +7,9 @@ void Quit::handle(
     shared_ptr<Client>  client,
     ClientStore&        clientStore,
     ChannelStore&,
-    IrcServer&)
+    IrcServer&  ircServer)
 {
-    client->send(Message() << client->getSource() << Verb("ERROR") << "Bye!");
+    client->send(Message() << ircServer.getSource() << client->getSource() << Verb("ERROR") << "Bye!");
     client->close();
 
     std::string reason;

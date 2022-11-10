@@ -7,17 +7,17 @@ void User::handle(
     shared_ptr<Client>  client,
     ClientStore&,
     ChannelStore&,
-    IrcServer&)
+    IrcServer&  ircServer)
 {
     if (msg.params.size() < 4)
     {
-        client->send(Message() << ERR_NEEDMOREPARAMS << client->getNickname() << "USER" << "Not enough parameters");
+        client->send(Message() << ircServer.getSource() << ERR_NEEDMOREPARAMS << client->getNickname() << "USER" << "Not enough parameters");
         return ;
     }
 
     if (!client->getUsername().empty())
     {
-        client->send(Message() << ERR_ALREADYREGISTERED << client->getNickname() << "USER" << "You may not reregister");
+        client->send(Message() << ircServer.getSource() << ERR_ALREADYREGISTERED << client->getNickname() << "USER" << "You may not reregister");
         return ;
     }
 
@@ -28,6 +28,9 @@ void User::handle(
     client->setRealName(realName);
 
     if (!client->getNickname().empty() && client->hasAnyModes(MODE_USER_AUTORIZED))
+    {
         client->setModes(MODE_USER_REGISTERED);
+        Motd::showMotd(client, ircServer);
+    }
 
 }

@@ -2,6 +2,7 @@
 # define PASS_HPP
 
 # include "../Router.hpp"
+# include "Motd.hpp"
 
 struct Pass
 {

@@ -7,17 +7,17 @@ void Join::handle(
     shared_ptr<Client>  client,
     ClientStore&,
     ChannelStore&       channelStore,
-    IrcServer&)
+    IrcServer&          ircServer)
 {
     if (!client->hasAnyModes(MODE_USER_REGISTERED))
     {
-        client->send(Message() << ERR_NOTREGISTERED << "You have not registered");
+        client->send(Message() << ircServer.getSource() << ERR_NOTREGISTERED << "You have not registered");
         return ;
     }
 
     if (msg.params.empty())
     {
-        client->send(Message() << ERR_NEEDMOREPARAMS << client->getNickname() << "JOIN" << "Not enough parameters");
+        client->send(Message() << ircServer.getSource() << ERR_NEEDMOREPARAMS << client->getNickname() << "JOIN" << "Not enough parameters");
         return ;
     }
 
@@ -25,7 +25,7 @@ void Join::handle(
 
     if (channelName.find(',') != std::string::npos)
     {
-        client->send(Message() << ERR_TOOMANYCHANNELS << client->getNickname() << "*" << "You have joined too many channels");
+        client->send(Message() << ircServer.getSource() << ERR_TOOMANYCHANNELS << client->getNickname() << "*" << "You have joined too many channels");
         return ;
     }
 
@@ -39,12 +39,12 @@ void Join::handle(
     {
         if (*channelName.begin() != '#')
         {
-            client->send(Message() << ERR_NOSUCHCHANNEL << client->getNickname() << channelName << "No such channel");
+            client->send(Message() << ircServer.getSource() << ERR_NOSUCHCHANNEL << client->getNickname() << channelName << "No such channel");
             return ;
         }
 
         channelStore.add(client, channelName);
-        client->send(Message() << Verb("Mode") << channelName << "+q" << client->getNickname());
+        client->send(Message() << ircServer.getSource() << Verb("Mode") << channelName << "+q" << client->getNickname());
 
         if (msg.params.size() == 2)
             channel->setKey(msg.params[1]);
@@ -56,7 +56,7 @@ void Join::handle(
 
     if (!channelKey.empty() && (msg.params.size() < 2 || channelKey != msg.params[1]) && !client->hasAnyModes(MODE_USER_OPER))
     {
-        client->send(Message() << ERR_BADCHANNELKEY << client->getNickname() << channelName << "Cannot join channel (+k)");
+        client->send(Message() << ircServer.getSource() << ERR_BADCHANNELKEY << client->getNickname() << channelName << "Cannot join channel (+k)");
         return ;
     }
 
