@@ -1,6 +1,6 @@
 #include "irc/Client.hpp"
 
-Client::Client(const std::string& hostname, IrcConnection& connection, ClientStore& store) : Modes(0), _nickname("*"), _hostname(hostname), _connection(connection), _store(store) {}
+Client::Client(const std::string& hostname, IrcConnection& connection, ClientStore& store) : Modes(0), _nickname("*"), _hostname(hostname), _connection(connection), _store(store){}
 
 std::string Client::getNickname(void) const { return _nickname; }
 
@@ -60,6 +60,11 @@ Message::Source Client::getSource(void) const
         .hostname = _hostname
     };
 }
+
+bool Client::Client::addChannel(std::string ch){
+	for (std::set<std::string>::iterator it = _clent_channels.begin(); it != _clent_channels.end(); ++it){std::cout << "|" << *it << "|" <<std::endl;}
+	return _clent_channels.insert(ch).second;
+	}
 
 Client::AlphaNumericConstraintViolationException::AlphaNumericConstraintViolationException(const char* what) : std::runtime_error(what) {}
 

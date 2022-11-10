@@ -48,7 +48,9 @@ void Join::handle(
 
         if (msg.params.size() == 2)
             channel->setKey(msg.params[1]);
-
+		if(!client->addChannel(channel->getName())){
+			 client->send(Message() << ircServer.getSource() << ERR_TOOMANYCHANNELS << client->getNickname() << "*" << "You already joined in this channel");
+		}
         return ;
     }
 

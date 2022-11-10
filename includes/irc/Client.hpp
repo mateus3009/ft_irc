@@ -20,17 +20,19 @@ class ClientStore;
 class Client : public Modes
 {
     private:
-        std::string         _nickname;
+        std::string         			_nickname;
 
-        std::string         _username;
+        std::string         			_username;
 
-        const std::string   _hostname;
+        const std::string   			_hostname;
 
-        std::string         _realName;
+        std::string         			_realName;
 
-        IrcConnection&      _connection;
+        IrcConnection&      			_connection;
 
-        ClientStore&        _store;
+        ClientStore&        			_store;
+
+		std::set<std::string>			_clent_channels;
 
     public:
         Client(const std::string& hostname, IrcConnection& connection, ClientStore& store);
@@ -52,6 +54,8 @@ class Client : public Modes
         void send(const Message& msg);
 
         void close(void);
+
+		bool addChannel(std::string ch);
 
         Message::Source getSource(void) const;
 
