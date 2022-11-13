@@ -9,7 +9,7 @@ void Part::handle(
     ChannelStore&       channelStore,
     IrcServer&  ircServer)
 {
-    if (!client->hasAnyModes(MODE_USER_REGISTERED))
+    if (!ircServer.isRegistered(client))
     {
         client->send(Message() << ircServer.getSource() << ERR_NOTREGISTERED << "You have not registered");
         return ;

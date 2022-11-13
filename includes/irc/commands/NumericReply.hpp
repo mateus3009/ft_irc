@@ -80,6 +80,7 @@
 # define ERR_TOOMANYCHANNELS    405
 # define ERR_WASNOSUCHNICK      406
 # define ERR_NOORIGIN           409
+# define ERR_INVALIDCAPCMD      410
 # define ERR_INPUTTOOLONG       417
 # define ERR_UNKNOWNCOMMAND     421
 # define ERR_NOMOTD             422

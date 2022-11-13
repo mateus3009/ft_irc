@@ -9,7 +9,7 @@ void Pass::handle(
     ChannelStore&,
     IrcServer& ircServer)
 {
-    if (client->hasAnyModes(MODE_USER_AUTORIZED))
+    if (client->hasAnyModes(MODE_USER_AUTORIZED) || ircServer.isRegistered(client))
     {
         client->send(Message() << ircServer.getSource() << ERR_ALREADYREGISTERED << client->getNickname() << "PASS" << "You may not reregister");
         return ;
@@ -31,9 +31,6 @@ void Pass::handle(
 
     client->setModes(MODE_USER_AUTORIZED);
 
-    if (!client->getNickname().empty() && !client->getUsername().empty())
-    {
+    if (ircServer.isRegistered(client))
         client->setModes(MODE_USER_REGISTERED);
-        Motd::showMotd(client, ircServer);
-    }
 }

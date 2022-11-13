@@ -17,12 +17,13 @@
 # define MODE_CHANNEL_PROTECTED_TOPIC       0x128
 # define MODE_CHANNEL_NO_EXTERNAL_MESSAGES  0x256
 
-# define MODE_USER_INVISIBLE    0x01
-# define MODE_USER_OPER         0x02
-# define MODE_USER_LOCAL_OPER   0x04
-# define MODE_USER_REGISTERED   0x08
-# define MODE_USER_WALLOPS      0x16
-# define MODE_USER_AUTORIZED    0x36
+# define MODE_USER_INVISIBLE        0x01
+# define MODE_USER_OPER             0x02
+# define MODE_USER_LOCAL_OPER       0x04
+# define MODE_USER_REGISTERED       0x08
+# define MODE_USER_WALLOPS          0x16
+# define MODE_USER_AUTORIZED        0x32
+# define MODE_USER_CAP_NEGOTIATION  0x64
 
 class Modes
 {

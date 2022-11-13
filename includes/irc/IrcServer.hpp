@@ -4,6 +4,9 @@
 # include <string>
 
 # include "Message.hpp"
+# include "Client.hpp"
+
+class Client;
 
 class IrcServer
 {
@@ -36,6 +39,8 @@ class IrcServer
         void setWelcomeMessage(const std::string& welcomeMessage);
 
         Message::Source getSource(void) const;
+
+        bool isRegistered(shared_ptr<Client> client) const;
 };
 
 #endif

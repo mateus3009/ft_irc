@@ -98,8 +98,7 @@ Message::Message(const char* str)
         start = ++index;
         while (str[index] != '\0')
             ++index;
-        if (start != index)
-            this->params.push_back(std::string(str + start, str + index));
+        this->params.push_back(std::string(str + start, str + index));
     }
 }
 
@@ -134,10 +133,10 @@ std::string Message::toString(void) const
 
     stream << this->verb;
 
-    for (std::vector<std::string>::const_iterator it = this->params.begin(); it != this->params.end(); ++it)
+    for (std::vector<std::string>::const_iterator it = params.begin(); it != params.end(); ++it)
     {
         stream << ' ';
-        if (it->find(' ') != std::string::npos)
+        if (it->find(' ') != std::string::npos || it + 1 == params.end())
             stream << ':';
         stream << *it;
     }
@@ -183,8 +182,6 @@ Message operator<<(const Message& msg, const Verb& verb)
 
 Message operator<<(const Message& msg, const std::string& param)
 {
-    if (param.empty())
-        return msg;
     Message m = msg;
     m.params.push_back(param);
     return m;

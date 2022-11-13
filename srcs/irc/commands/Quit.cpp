@@ -16,6 +16,6 @@ void Quit::handle(
     if (!msg.params.empty())
         reason = *msg.params.begin();
 
-    if (client->hasAnyModes(MODE_USER_REGISTERED))
+    if (ircServer.isRegistered(client))
         clientStore.broadcast(Message() << client->getSource() << Verb("QUIT") << "Quit: " + reason);
 }

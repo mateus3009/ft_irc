@@ -22,3 +22,15 @@ Message::Source IrcServer::getSource(void) const
 {
     return (Message::Source) { .nickname = _serverName };
 }
+
+
+bool IrcServer::isRegistered(shared_ptr<Client> client) const
+{
+    if (!_password.empty() && !client->hasAnyModes(MODE_USER_AUTORIZED))
+        return false;
+    if (client->getNickname() == "*")
+        return false;
+    if (client->getUsername().empty())
+        return false;
+    return true;
+}

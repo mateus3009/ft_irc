@@ -31,12 +31,9 @@ void Nick::handle(
         client->send(Message() << ircServer.getSource() << ERR_NICKNAMEINUSE  << nickname << "Nickname is already in use");
     }
 
-    if (client->hasAnyModes(MODE_USER_REGISTERED))
+    if (ircServer.isRegistered(client))
         clientStore.broadcast(Message() << src << Verb("NICK") << nickname);
 
-    if (!client->getUsername().empty() && client->hasAnyModes(MODE_USER_AUTORIZED) && !client->hasAnyModes(MODE_USER_REGISTERED))
-    {
+    if (ircServer.isRegistered(client))
         client->setModes(MODE_USER_REGISTERED);
-        Motd::showMotd(client, ircServer);
-    }
 }

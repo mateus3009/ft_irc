@@ -11,8 +11,7 @@
 class Client;
 class ClientStore;
 class ChannelStore;
-
-
+class IrcServer;
 
 class Router
 {
