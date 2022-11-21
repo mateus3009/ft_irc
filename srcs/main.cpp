@@ -4,7 +4,7 @@
 #include "irc/Client.hpp"
 #include "irc/Channel.hpp"
 #include "irc/IrcServer.hpp"
-#include "irc/commands/Help.hpp"
+#include "irc/commands/commons/UnkownCommand.hpp"
 #include <iostream>
 
 int main(int argc, const char** argv)
@@ -19,7 +19,7 @@ int main(int argc, const char** argv)
     IrcServer ircServer;
     ircServer.setPassword(argv[2]);
     ircServer.setServerName("42irc");
-    Router::setNotFound(Help::handle);
+    Router::setNotFound(UnkownCommand::handle);
     Router::setClientStore(&clientStore);
     Router::setChannelStore(&channelStore);
     Router::setIrcServer(&ircServer);
