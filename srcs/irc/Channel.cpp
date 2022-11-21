@@ -108,6 +108,7 @@ void ChannelStore::add(shared_ptr<Client> client, const std::string& name)
     shared_ptr<Channel> channel = new Channel(name, client, *this);
     if (!_channels.insert(channel).second)
         throw ChannelStore::ChannelAlreadyExistsException("Two channels cannot have the same name!");
+    channel->setModes(MODE_CHANNEL_PROTECTED_TOPIC | MODE_CHANNEL_NO_EXTERNAL_MESSAGES);
 }
 
 shared_ptr<Channel> ChannelStore::find(const std::string& name)
