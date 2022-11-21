@@ -52,8 +52,6 @@ struct Verb
 
 Message operator<<(const Message& msg, const Message::Source& src);
 
-Message operator<<(const Message& msg, const int& reply);
-
 Message operator<<(const Message& msg, const Verb& Verb);
 
 Message operator<<(const Message& msg, const std::string& param);

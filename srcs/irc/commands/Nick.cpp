@@ -35,5 +35,8 @@ void Nick::handle(
         clientStore.broadcast(Message() << src << Verb("NICK") << nickname);
 
     if (ircServer.isRegistered(client))
+    {
         client->setModes(MODE_USER_REGISTERED);
+        welcome(client, ircServer);
+    }
 }

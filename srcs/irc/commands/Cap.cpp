@@ -34,7 +34,11 @@ void Cap::handle(
     {
         client->unsetModes(MODE_USER_CAP_NEGOTIATION);
         if (ircServer.isRegistered(client))
+        {
             client->setModes(MODE_USER_REGISTERED);
+            welcome(client, ircServer);
+        }
+        return ;
     }
 
     client->send(Message() << ircServer.getSource() << ERR_INVALIDCAPCMD << client->getNickname() << command << "Invalid CAP command");

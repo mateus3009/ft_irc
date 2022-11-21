@@ -32,5 +32,7 @@ bool IrcServer::isRegistered(shared_ptr<Client> client) const
         return false;
     if (client->getUsername().empty())
         return false;
+    if (client->hasAnyModes(MODE_USER_CAP_NEGOTIATION))
+        return false;
     return true;
 }

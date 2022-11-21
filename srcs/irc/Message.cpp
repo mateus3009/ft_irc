@@ -164,15 +164,6 @@ Message operator<<(const Message& msg, const Message::Source& src)
     return m;
 }
 
-Message operator<<(const Message& msg, const int& reply)
-{
-    Message m = msg;
-    std::stringstream stream;
-    stream << reply;
-    m.verb = stream.str();
-    return m;
-}
-
 Message operator<<(const Message& msg, const Verb& verb)
 {
     Message m = msg;

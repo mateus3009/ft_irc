@@ -2,6 +2,7 @@
 # define CAP_HPP
 
 # include "../Router.hpp"
+# include "commons/Welcome.hpp"
 
 struct Cap
 {
