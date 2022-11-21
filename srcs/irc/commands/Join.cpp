@@ -21,6 +21,12 @@ void Join::handle(
         return ;
     }
 
+    if (msg.params.size() == 1 && msg.params.front() == "0")
+    {
+        client->send(Message() << ircServer.getSource() << ERR_UNKNOWNERROR << client->getNickname() << "JOIN" << "0" << "Not implemented!");
+        return ;
+    }
+
     const std::string& channelName = msg.params.front();
 
     if (channelName.find(',') != std::string::npos)
@@ -48,9 +54,6 @@ void Join::handle(
 
         if (msg.params.size() == 2)
             channel->setKey(msg.params[1]);
-		if(!client->addChannel(channel->getName())){
-			 client->send(Message() << ircServer.getSource() << ERR_TOOMANYCHANNELS << client->getNickname() << "*" << "You already joined in this channel");
-		}
         return ;
     }
 

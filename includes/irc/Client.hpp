@@ -32,7 +32,7 @@ class Client : public Modes
 
         ClientStore&        			_store;
 
-		std::set<std::string>			_clent_channels;
+		std::set<std::string>			_channels;
 
     public:
         Client(const std::string& hostname, IrcConnection& connection, ClientStore& store);

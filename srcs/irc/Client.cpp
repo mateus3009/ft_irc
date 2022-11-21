@@ -61,10 +61,11 @@ Message::Source Client::getSource(void) const
     };
 }
 
-bool Client::Client::addChannel(std::string ch){
-	for (std::set<std::string>::iterator it = _clent_channels.begin(); it != _clent_channels.end(); ++it){std::cout << "|" << *it << "|" <<std::endl;}
-	return _clent_channels.insert(ch).second;
-	}
+bool Client::Client::addChannel(std::string ch) {
+	for (std::set<std::string>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+        std::cout << "|" << *it << "|" <<std::endl;
+    return _channels.insert(ch).second;
+}
 
 Client::AlphaNumericConstraintViolationException::AlphaNumericConstraintViolationException(const char* what) : std::runtime_error(what) {}
 
