@@ -10,31 +10,30 @@
 
 # include "FileDescriptor.hpp"
 
-class SocketConnection : public FileDescriptor, public Reader, public Writer
-{
-    public:
-        SocketConnection();
+    class SocketConnection : public FileDescriptor, public Reader, public Writer
+    {
+        public:
+            SocketConnection();
 
-        SocketConnection(const int& fd);
+            SocketConnection(const int& fd);
 
-        SocketConnection(const SocketConnection& other);
+            SocketConnection(const SocketConnection& other);
 
-        ssize_t send(const void* buf, const size_t& n, const int& flags = 0) const;
+            ssize_t send(const void* buf, const size_t& n, const int& flags = MSG_DONTWAIT | MSG_NOSIGNAL) const;
 
-        ssize_t receive(void* buf, const size_t& n, const int& flags = 0) const;
+            ssize_t receive(void* buf, const size_t& n, const int& flags = MSG_DONTWAIT) const;
 
-        std::string get_hostname(void) const;
+            std::string get_hostname(void) const;
 
-};
+    };
 
-class SocketListener : public FileDescriptor
-{
-    public:
-        SocketListener(const char* port);
+    class SocketListener : public FileDescriptor
+    {
+        public:
+            SocketListener(const char* port = "0", const char* hostname = NULL);
 
-        SocketConnection accept(void) const;
+            SocketConnection accept(void) const;
 
-};
+    };
 
 #endif
-

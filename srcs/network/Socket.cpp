@@ -46,23 +46,22 @@ std::string SocketConnection::get_hostname(void) const
 
 /* SocketListener */
 
-SocketListener::SocketListener(const char* port) : FileDescriptor()
+SocketListener::SocketListener(const char* port, const char* hostname) : FileDescriptor()
 {
     addrinfo    hints;
-    addrinfo*   res;
-    addrinfo*   p;
-    int         status;
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family     = AF_INET6;
     hints.ai_socktype   = SOCK_STREAM;
     hints.ai_flags      = AI_PASSIVE;
 
-    status = getaddrinfo(NULL, port, &hints, &res);
+    addrinfo* res;
+    int status = getaddrinfo(hostname, port, &hints, &res);
     if (status < 0)
         throw std::runtime_error(gai_strerror(status));
 
     status = 1;
+    addrinfo* p;
     for (p = res; p != NULL; p = p->ai_next)
     {
         _id = socket(p->ai_family, p->ai_socktype, p->ai_protocol);

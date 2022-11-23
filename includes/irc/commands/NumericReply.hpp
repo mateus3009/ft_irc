@@ -79,6 +79,7 @@
 # define ERR_CANNOTSENDTOCHAN   Verb("404")
 # define ERR_TOOMANYCHANNELS    Verb("405")
 # define ERR_WASNOSUCHNICK      Verb("406")
+# define ERR_TOOMANYTARGETS     Verb("407")
 # define ERR_NOORIGIN           Verb("409")
 # define ERR_INVALIDCAPCMD      Verb("410")
 # define ERR_INPUTTOOLONG       Verb("417")

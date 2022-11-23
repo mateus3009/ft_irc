@@ -25,7 +25,7 @@ class Server
         {
             while (true)
             {
-                if (poll(_poll.data(), _poll.size(), -1) < 0)
+                if (poll(_poll.data(), _poll.size(), 500) < 0)
                     throw std::runtime_error("");
 
                 size_t index = 0;

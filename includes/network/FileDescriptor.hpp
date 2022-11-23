@@ -4,6 +4,8 @@
 # include <unistd.h>
 # include <vector>
 # include <poll.h>
+# include <cerrno>
+# include <cstring>
 
 # include "../utils/observer.hpp"
 
@@ -19,9 +21,7 @@ class FileDescriptor
 
         int getId(void) const;
 
-        void close(void);
-
-        bool isValid(void) const;
+        void close(void) const;
 
         struct InvalidFileDescriptorException : public std::runtime_error
         {
