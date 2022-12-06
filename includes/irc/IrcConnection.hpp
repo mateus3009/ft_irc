@@ -22,6 +22,7 @@ class IrcConnection
         void accept(const Message& msg);
 
         void close(void);
+        ConnectionProxy& getProxy(void);
 
 };
 

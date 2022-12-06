@@ -49,6 +49,8 @@ class Client : public Modes
 
         std::string getRealName(void) const;
 
+        int getIdClient(void) const;
+
         void setRealName(const std::string& realName);
 
         void send(const Message& msg);

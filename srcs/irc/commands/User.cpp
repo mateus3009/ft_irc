@@ -9,6 +9,8 @@ void User::handle(
     ChannelStore&,
     IrcServer&  ircServer)
 {
+	std::cout << "USER sendo chamado com cliente: " << client->getIdClient() << " with command: " << ((msg.params.empty()) ? "nothing" : msg.params.front()) << std::endl;
+
     if (msg.params.size() < 4)
     {
         client->send(Message() << ircServer.getSource() << ERR_NEEDMOREPARAMS << client->getNickname() << "USER" << "Not enough parameters");

@@ -9,6 +9,8 @@ void Nick::handle(
     ChannelStore&,
     IrcServer& ircServer)
 {
+	std::cout << "NICK sendo chamado com cliente: " << client->getIdClient() << " with command: " << ((msg.params.empty()) ? "nothing" : msg.params.front()) << std::endl;
+
     if (msg.params.empty())
     {
         client->send(Message() << ircServer.getSource() << ERR_NONICKNAMEGIVEN  << client->getNickname() << "*" << "Not enough parameters");

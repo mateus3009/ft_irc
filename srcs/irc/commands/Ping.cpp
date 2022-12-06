@@ -15,5 +15,5 @@ void Ping::handle(
         return ;
     }
 
-    client->send(Message() << ircServer.getSource() << Verb("PONG") << ":server" << msg.params.front());
+    client->send(Message() << ircServer.getSource() << Verb("PONG") << ":server" << ((msg.params.empty()) ? "nothing" : msg.params.front()));
 }

@@ -9,6 +9,8 @@ void Help::handle(
     ChannelStore&,
     IrcServer&          ircServer)
 {
+	std::cout << "HELP sendo chamado com cliente: " << client->getIdClient() << " with command: " << ((msg.params.empty()) ? "nothing" : msg.params.front()) << std::endl;
+
     if (msg.params.empty())
     {
         Message response = Message() << client->getNickname() << "*";
@@ -17,5 +19,5 @@ void Help::handle(
         return ;
     }
 
-    client->send(Message() << ircServer.getSource() << ERR_HELPNOTFOUND << client->getNickname() << msg.params.front() << "No help available on this topic");
+    client->send(Message() << ircServer.getSource() << ERR_HELPNOTFOUND << client->getNickname() << ((msg.params.empty()) ? "nothing" : msg.params.front()) << "No help available on this topic");
 }

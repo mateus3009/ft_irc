@@ -33,6 +33,7 @@ class Server
                 if (_poll[index].revents & POLLIN && _poll[index].fd == _listener.getId())
                 {
                     Connection<T>* con = new Connection<T>(_listener.accept());
+					std::cout << "criando nova conexão: " << con->getId() << std::endl;
                     _connections.push_back(con);
                     _poll.push_back((pollfd) { .fd = con->getId(), .events = POLLIN });
                 }
@@ -54,6 +55,11 @@ class Server
 
                     if (_connections[index]->isClosing() || _poll[index].revents & (POLLHUP | POLLERR | POLLNVAL))
                     {
+						std::cout << "cliente desconectando: " << _connections[index]->getId() << " is closing ? " << ((_connections[index]->isClosing())?" (true)":" false") 
+						<< " poll index " << _poll[index].revents << std::endl;
+						// size_t n = -1;
+						// while(++n < index)
+						// 	std::cout << "list: " << _connections[n]->getId() << std::endl;
                         _connections[index]->close();
                         _poll.erase(_poll.begin() + index);
                         delete _connections[index];

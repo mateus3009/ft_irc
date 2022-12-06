@@ -9,6 +9,8 @@ void Quit::handle(
     ChannelStore&,
     IrcServer&  ircServer)
 {
+	std::cout << "QUIT sendo chamado com cliente: " << client->getIdClient() << " with command: " << ((msg.params.empty()) ? "nothing" : msg.params.front()) << std::endl;
+
     client->send(Message() << ircServer.getSource() << client->getSource() << Verb("ERROR") << "Bye!");
     client->close();
 

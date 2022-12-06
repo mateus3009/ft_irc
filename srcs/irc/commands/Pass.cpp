@@ -9,6 +9,8 @@ void Pass::handle(
     ChannelStore&,
     IrcServer& ircServer)
 {
+	std::cout << "PASS sendo chamado com cliente: " << client->getIdClient() << " with command: " << ((msg.params.empty()) ? "nothing" : msg.params.front()) << std::endl;
+
     if (client->hasAnyModes(MODE_USER_AUTORIZED) || ircServer.isRegistered(client))
     {
         client->send(Message() << ircServer.getSource() << ERR_ALREADYREGISTERED << client->getNickname() << "PASS" << "You may not reregister");

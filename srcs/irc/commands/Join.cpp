@@ -9,6 +9,7 @@ void Join::handle(
     ChannelStore&       channelStore,
     IrcServer&          ircServer)
 {
+	std::cout << "JOIN sendo chamado com cliente: " << client->getIdClient() << " with command: " << ((msg.params.empty()) ? "nothing" : msg.params.front()) << std::endl;
     if (!ircServer.isRegistered(client))
     {
         client->send(Message() << ircServer.getSource() << ERR_NOTREGISTERED << "You have not registered");

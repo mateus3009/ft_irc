@@ -40,6 +40,8 @@ std::string Client::getHostname(void) const { return _hostname; }
 
 std::string Client::getRealName(void) const { return _realName; }
 
+int Client::getIdClient(void) const { return _connection.getProxy().getId(); }
+
 void Client::setRealName(const std::string& realName)
 {
     _realName = realName;
@@ -92,6 +94,8 @@ bool operator<(const Client& l, const Client& r)
 
 shared_ptr<Client> ClientStore::add(const int& id, const std::string& hostname, IrcConnection& connection)
 {
+	std::cout << "criando cliente na lista: " << id  << "com o hostname" << ((hostname != "") ? hostname: "")<< std::endl;
+
     shared_ptr<Client> client = new Client(hostname, connection, *this);
     if (!_clients.insert(std::make_pair(id, client)).second)
         throw ClientStore::ClientAlreadyExists("The client already exists!");
@@ -115,6 +119,8 @@ void ClientStore::broadcast(const Message& msg)
 
 void ClientStore::remove(shared_ptr<Client> client)
 {
+	std::cout << "removendo cliente da lista: " << client->getIdClient() << std::endl;
+
     ClientPredicate p = { .client = client };
     ClientStore::iterator it = std::find_if(_clients.begin(), _clients.end(), p);
     if (it == _clients.end())
