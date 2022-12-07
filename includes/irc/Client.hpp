@@ -35,7 +35,7 @@ class Client : public Modes
 		std::set<std::string>			_channels;
 
     public:
-        Client(const std::string& hostname, IrcConnection& connection, ClientStore& store);
+        Client(IrcConnection& connection, ClientStore& store);
 
         std::string getNickname(void) const;
 
@@ -92,7 +92,7 @@ class ClientStore
     public:
         typedef std::map<int, shared_ptr<Client> >::iterator iterator;
 
-        shared_ptr<Client> add(const int& id, const std::string& hostname, IrcConnection& connection);
+        shared_ptr<Client> add(IrcConnection& connection);
 
         shared_ptr<Client> find(const std::string& nickname);
 

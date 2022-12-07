@@ -22,7 +22,12 @@ class IrcConnection
         void accept(const Message& msg);
 
         void close(void);
+
         ConnectionProxy& getProxy(void);
+
+        std::string getHostname(void) const;
+
+        int getId(void) const;
 
 };
 

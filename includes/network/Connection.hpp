@@ -23,6 +23,7 @@ class ConnectionProxy
         void close(void);
 
         int getId(void) const;
+
 };
 
 template <typename T>

@@ -1,6 +1,6 @@
 #include "irc/Client.hpp"
 
-Client::Client(const std::string& hostname, IrcConnection& connection, ClientStore& store) : Modes(0), _nickname("*"), _hostname(hostname), _connection(connection), _store(store){}
+Client::Client(IrcConnection& connection, ClientStore& store) : Modes(0), _nickname("*"), _hostname(connection.getHostname()), _connection(connection), _store(store){}
 
 std::string Client::getNickname(void) const { return _nickname; }
 
@@ -92,12 +92,12 @@ bool operator<(const Client& l, const Client& r)
 
 /* ClientStore */
 
-shared_ptr<Client> ClientStore::add(const int& id, const std::string& hostname, IrcConnection& connection)
+shared_ptr<Client> ClientStore::add(IrcConnection& connection)
 {
-	std::cout << "criando cliente na lista: " << id  << "com o hostname" << ((hostname != "") ? hostname: "")<< std::endl;
+	std::cout << "criando cliente na lista: " << connection.getId()  << "com o hostname: " << connection.getHostname() << std::endl;
 
-    shared_ptr<Client> client = new Client(hostname, connection, *this);
-    if (!_clients.insert(std::make_pair(id, client)).second)
+    shared_ptr<Client> client = new Client(connection, *this);
+    if (!_clients.insert(std::make_pair(connection.getId(), client)).second)
         throw ClientStore::ClientAlreadyExists("The client already exists!");
     return client;
 }
