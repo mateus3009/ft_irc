@@ -29,7 +29,9 @@ void Server::init(const SocketListener& listener, const std::string& password)
     ServerContext sctx = (ServerContext) {
         .motd = "Hello world",
         .password = password,
-        .serverName = "42irc"
+        .serverName = "42irc",
+        .operName = "42oper",
+        .operPassword = "1234"
     };
 
     CommandRouter::serverContext = &sctx;

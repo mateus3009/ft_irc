@@ -47,10 +47,10 @@ void Quit::handler(Payload& p)
 
     std::string reason = "Quit: ";
     if (!p.req.params.empty())
-        reason = reason.append(p.req.params.front());
+        reason = reason + p.req.params.front();
 
     if (p.client->isRegistered)
-        p.clientStore->broadcast(Message() << p.client->getSource() << Verb("QUIT") << reason, p.client->getNickname());
+        p.clientStore->broadcast(Message() << p.client->getSource() << Verb("QUIT") << p.client->getNickname() << reason, p.client->getNickname());
 }
 
 /* Welcome */
@@ -288,7 +288,7 @@ void Motd::handler(Payload& p)
         return ;
     }
 
-    p.client->send(p.res << RPL_MOTDSTART << std::string("- ").append(p.serverContext->serverName).append(" Message of the day -"));
+    p.client->send(p.res << RPL_MOTDSTART << "- " + p.serverContext->serverName + " Message of the day -");
     p.client->send(p.res << RPL_MOTD << p.serverContext->motd);
     p.client->send(p.res << RPL_ENDOFMOTD << "End of /MOTD command.");
 }
@@ -442,9 +442,9 @@ bool Part::isRegistered = CommandRouter::add("PART", (CommandRegister) {
 void Part::handler(Payload& p)
 {
     std::vector<std::string> targets = split(p.req.params.front(), ',');
-    std::string reason = "Reason: ";
+    std::string reason = "";
     if (p.req.params.size() > 1)
-        reason = reason.append(p.req.params[1]);
+        reason = reason + p.req.params[1];
     for (std::vector<std::string>::iterator it = targets.begin(); it != targets.end(); ++it)
     {
         try
@@ -485,7 +485,7 @@ void Who::handler(Payload& p)
                 p.client->send(p.res << RPL_WHOREPLY << c->getName()
                 << client->getUsername() << client->getHostname()
                 << p.serverContext->serverName << client->getNickname()
-                << "H" << std::string("0 ").append(client->getRealName()));
+                << "H" << "0 " + client->getRealName());
             }
         }
         else
@@ -494,7 +494,7 @@ void Who::handler(Payload& p)
             p.client->send(p.res << RPL_WHOREPLY << "*"
                 << p.client->getUsername() << p.client->getHostname()
                 << p.serverContext->serverName << p.client->getNickname()
-                << "H" << std::string("0 ").append(p.client->getRealName()));
+                << "H" << "0 " + p.client->getRealName());
         }
         p.client->send(p.res << RPL_ENDOFWHO << target << "End of WHO list");
     }
@@ -511,3 +511,55 @@ void Who::handler(Payload& p)
         p.client->send(p.res << ERR_NOSUCHNICK << target << "No such nick/channel");
     }
 }
+
+/* Oper */
+
+bool Oper::isRegistered = CommandRouter::add("OPER", (CommandRegister) {
+    .command = Oper::handler, .isRegistered = true, .paramsMin = 2});
+
+void Oper::handler(Payload& p)
+{
+    if (p.serverContext->operName != p.req.params[0]
+        || p.serverContext->operPassword != p.req.params[1])
+    {
+        p.client->send(p.res << ERR_PASSWDMISMATCH << "Password incorrect");
+        return ;
+    }
+    p.client->isOperator = true;
+    p.client->send(p.res << RPL_YOUREOPER << "You are now an IRC operator");
+    p.client->send(p.res << RPL_UMODEIS << "iro");
+}
+
+/* Kill */
+
+bool Kill::isRegistered = CommandRouter::add("KILL", (CommandRegister) {
+    .command = Kill::handler, .isRegistered = true, .isOperator = true, .paramsMin = 1});
+
+void Kill::handler(Payload& p)
+{
+    std::string& target = p.req.params.front();
+    std::string reason = "";
+    if (p.req.params.size() > 1)
+        reason = reason + p.req.params[1];
+    try
+    {
+        shared_ptr<Client> c = p.clientStore->find(target);
+        p.clientStore->broadcast(Message() << c->getSource() << Verb("QUIT") << c->getNickname() << "Killed " + p.client->getNickname() + " " + reason);
+        c->send(Message() << p.client->getSource() << Verb("ERROR") << reason);
+        c->close();
+    }
+    catch(const ClientStore::ClientNotFoundException&)
+    {
+        p.client->send(p.res << ERR_NOSUCHNICK << target << "No such nick/channel");
+    }
+}
+
+/* Squit */
+
+bool Squit::isRegistered = CommandRouter::add("SQUIT", (CommandRegister) {
+    .command = Squit::handler, .isRegistered = true, .isOperator = true, .paramsMin = 0});
+
+void Squit::handler(Payload&)
+{
+}
+

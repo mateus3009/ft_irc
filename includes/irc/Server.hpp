@@ -19,6 +19,10 @@ struct ServerContext
 
     std::string serverName;
 
+    std::string operName;
+
+    std::string operPassword;
+
 };
 
 class Server

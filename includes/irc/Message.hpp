@@ -6,6 +6,7 @@
 # include <cstring>
 # include <sstream>
 # include <iostream>
+# include <algorithm>
 
 struct Message
 {

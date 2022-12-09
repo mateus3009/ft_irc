@@ -43,6 +43,8 @@ struct CommandRegister
 
     bool isRegistered;
 
+    bool isOperator;
+
     unsigned long paramsMin;
 
 };

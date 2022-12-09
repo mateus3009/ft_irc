@@ -43,6 +43,15 @@ void CommandRouter::call(const Message& msg, shared_ptr<Client>& client)
         return ;
     }
 
+    if (commandRegister.isOperator && !client->isOperator)
+    {
+        client->send(
+            Message()
+                << ERR_NOPRIVILEGES
+                << "You're not an operator");
+        return ;
+    }
+
     if (commandRegister.paramsMin > msg.params.size())
     {
         client->send(

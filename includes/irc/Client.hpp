@@ -40,6 +40,8 @@ class Client
 
         bool usingCap;
 
+        bool isOperator;
+
         std::string getNickname(void) const;
 
         void setNickname(const std::string& nickname);

@@ -131,4 +131,25 @@ struct Who
     static void handler(Payload& p);
 };
 
+struct Oper
+{
+    static bool isRegistered;
+
+    static void handler(Payload& p);
+};
+
+struct Kill
+{
+    static bool isRegistered;
+
+    static void handler(Payload& p);
+};
+
+struct Squit
+{
+    static bool isRegistered;
+
+    static void handler(Payload& p);
+};
+
 #endif

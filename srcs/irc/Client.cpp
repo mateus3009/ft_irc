@@ -8,7 +8,8 @@ Client::Client(ClientStore& store, ConnectionSubscription& connection) :
     _nickname("*"),
     isRegistered(false),
     hasPassword(false),
-    usingCap(false) {}
+    usingCap(false),
+    isOperator(false) {}
 
 std::string Client::getNickname(void) const { return _nickname; }
 

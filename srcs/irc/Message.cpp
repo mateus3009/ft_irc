@@ -76,6 +76,7 @@ Message::Message(const char* str)
     while (str[index] != '\0' && strchr(" \t", str[index]) == NULL)
         ++index;
     this->verb = std::string(str + start, str + index);
+    std::transform(verb.begin(), verb.end(), verb.begin(), ::toupper);
 
     /* Params */
 
