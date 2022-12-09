@@ -14,6 +14,7 @@ ConnectionSubscription::ConnectionSubscription(
         _output(connection),
         _isClosing(false)
 {
+    std::cout << "0< new connection: " << _connection->getId() << std::endl;
     _client = clientStore.add(*this);
     _client->setHostname(Socket::getHostname(_connection->getpeername()));
 }
@@ -30,7 +31,7 @@ void ConnectionSubscription::handle(const short& events)
         }
         catch(const Error& e)
         {
-            std::cerr << e.what() << '\n';
+            std::cerr << "0< " << e.what() << std::endl;
             _client->close();
             _connectionStore->remove(_connection->getId());
             return ;
@@ -50,7 +51,7 @@ void ConnectionSubscription::handle(const short& events)
         }
         catch(const InputBuffer::ClosedConnectionException& e)
         {
-            std::cerr << e.what() << '\n';
+            std::cerr << "0< " << e.what() << std::endl;
             _client->close();
             _connectionStore->remove(_connection->getId());
             return ;
@@ -59,6 +60,7 @@ void ConnectionSubscription::handle(const short& events)
 
     if ((events & (POLLHUP | POLLERR | POLLNVAL) || _isClosing) && !_output.queued())
     {
+        std::cerr << "0< closing connection: " << _connection->getId() << std::endl;
         _client->close();
         _connectionStore->remove(_connection->getId());
     }

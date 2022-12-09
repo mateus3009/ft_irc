@@ -30,7 +30,7 @@ Server::Server(const char* port, const char* hostname, const char* password)
 
     CommandRouter::serverContext = &sctx;
 
-    std::cout << socketListener << std::endl;
+    std::cout << "Server listenning on port " << Socket::getPort(socketListener.getsockname()) << std::endl;
 
     fileDescriptorObserver.start();
 }
