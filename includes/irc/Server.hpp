@@ -1,7 +1,6 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# include "../network/SocketSSL.hpp"
 # include "../network/FileDescriptorObserver.hpp"
 # include "network/ListenerSubscription.hpp"
 # include "network/ConnectionSubscription.hpp"
