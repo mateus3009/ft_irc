@@ -563,13 +563,3 @@ void Kill::handler(Payload& p)
         p.client->send(p.res << ERR_NOSUCHNICK << target << "No such nick/channel");
     }
 }
-
-/* Squit */
-
-bool Squit::isRegistered = CommandRouter::add("SQUIT", (CommandRegister) {
-    .command = Squit::handler, .isRegistered = true, .isOperator = true, .paramsMin = 0});
-
-void Squit::handler(Payload&)
-{
-}
-
