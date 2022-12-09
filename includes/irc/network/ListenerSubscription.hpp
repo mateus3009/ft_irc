@@ -10,14 +10,14 @@ class ConnectionSubscriptionStore;
 class ListenerSubscription : Subscription
 {
     private:
-        SocketListener* _listener;
+        const SocketListener* _listener;
 
         ConnectionSubscriptionStore* _connectionStore;
 
     public:
         ListenerSubscription(
             FileDescriptorObserver& observer,
-            SocketListener& listener,
+            const SocketListener& listener,
             ConnectionSubscriptionStore& connectionStore);
 
         virtual void handle(const short& events);

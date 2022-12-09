@@ -29,7 +29,7 @@ re : clean all
 bonus : re
 
 test : $(NAME)
-	valgrind --leak-check=full --track-origins=yes -q ./$(NAME)
+	valgrind --leak-check=full --track-origins=yes -q ./$(NAME) 6667 42
 
 cert:
 	openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365 -nodes -subj '/CN=localhost'

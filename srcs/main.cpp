@@ -13,11 +13,15 @@ int main(int argc, char** argv)
     if (argc > 1)
         port = argv[1];
 
-    char* hostname = (char *)NULL;
+    char* password = (char *)"";
     if (argc > 2)
-        hostname = argv[2];
+        password = argv[2];
 
-    Server s(port, hostname);
+    char* hostname = (char *)NULL;
+    if (argc > 3)
+        hostname = argv[3];
+
+    Server s(port, hostname, password);
 
     return 0;
 };

@@ -4,7 +4,7 @@
 
 ListenerSubscription::ListenerSubscription(
     FileDescriptorObserver& observer,
-    SocketListener& listener,
+    const SocketListener& listener,
     ConnectionSubscriptionStore& connectionStore)
         :
         Subscription(observer, listener.getId()),

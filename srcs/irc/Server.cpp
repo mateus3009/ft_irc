@@ -5,7 +5,11 @@
 Server::Server(const char* port, const char* hostname, const char* password)
 {
     SocketListener socketListener(port, hostname);
+    init(socketListener, password);
+}
 
+void Server::init(const SocketListener& listener, const std::string& password)
+{
     ClientStore clientStore;
 
     ChannelStore channelStore;
@@ -16,7 +20,7 @@ Server::Server(const char* port, const char* hostname, const char* password)
         fileDescriptorObserver, clientStore);
 
     ListenerSubscription listenerSubscription(
-        fileDescriptorObserver, socketListener, connectionSubscriptionStore);
+        fileDescriptorObserver, listener, connectionSubscriptionStore);
 
     CommandRouter::clientStore = &clientStore;
 
@@ -24,13 +28,13 @@ Server::Server(const char* port, const char* hostname, const char* password)
 
     ServerContext sctx = (ServerContext) {
         .motd = "Hello world",
-        .password = std::string(password),
+        .password = password,
         .serverName = "42irc"
     };
 
     CommandRouter::serverContext = &sctx;
 
-    std::cout << "Server listenning on port " << Socket::getPort(socketListener.getsockname()) << std::endl;
+    std::cout << "Server listenning on port " << Socket::getPort(listener.getsockname()) << std::endl;
 
     fileDescriptorObserver.start();
 }

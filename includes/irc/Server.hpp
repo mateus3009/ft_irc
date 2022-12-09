@@ -23,6 +23,9 @@ struct ServerContext
 
 class Server
 {
+    private:
+        void init(const SocketListener& listener, const std::string& password);
+
     public:
         Server(const char* port = "0", const char* hostname = NULL, const char* password = "");
 };
