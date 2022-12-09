@@ -145,7 +145,7 @@ std::string Message::toString(void) const
         stream << *it;
     }
 
-    return stream.str();
+    return stream.str().substr(0, 512);
 }
 
 void Message::clear(void)

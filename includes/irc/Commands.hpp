@@ -61,13 +61,6 @@ struct Cap
     static void handler(Payload& p);
 };
 
-struct ErrorC
-{
-    static bool isRegistered;
-
-    static void handler(Payload& p);
-};
-
 struct Notice
 {
     static bool isRegistered;

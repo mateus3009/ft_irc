@@ -21,6 +21,9 @@ ConnectionSubscription::ConnectionSubscription(
 
 void ConnectionSubscription::handle(const short& events)
 {
+    Message res;
+    res.source.nickname = CommandRouter::serverContext->serverName;
+    res.params.push_back(_client->getNickname());
     try
     {
         if (events & POLLOUT)
@@ -34,6 +37,7 @@ void ConnectionSubscription::handle(const short& events)
             catch(const Error& e)
             {
                 std::cerr << "0< " << e.what() << std::endl;
+                CommandRouter::clientStore->broadcast(res << Verb("QUIT") << "Fatal error!");
                 _client->close();
                 _connectionStore->remove(_connection->getId());
                 return ;
@@ -54,8 +58,16 @@ void ConnectionSubscription::handle(const short& events)
             catch(const InputBuffer::ClosedConnectionException& e)
             {
                 std::cerr << "0< " << e.what() << std::endl;
+                CommandRouter::clientStore->broadcast(res << Verb("QUIT") << "Fatal error!");
                 _client->close();
                 _connectionStore->remove(_connection->getId());
+                return ;
+            }
+            catch(const InputBuffer::NoSpaceLeftException& e)
+            {
+                std::cerr << "0< " << e.what() << std::endl;
+                _client->send(res << ERR_INPUTTOOLONG << "Input line was too long");
+                _input.clear();
                 return ;
             }
         }
@@ -63,6 +75,7 @@ void ConnectionSubscription::handle(const short& events)
         if ((events & (POLLHUP | POLLERR | POLLNVAL) || _isClosing) && !_output.queued())
         {
             std::cerr << "0< closing connection: " << _connection->getId() << std::endl;
+            CommandRouter::clientStore->broadcast(res << Verb("QUIT") << "Fatal error!");
             _client->close();
             _connectionStore->remove(_connection->getId());
         }
@@ -71,6 +84,7 @@ void ConnectionSubscription::handle(const short& events)
     {
         std::cerr << "0< Unkown erro on socket " <<  _connection->getId() << ": " << e.what() << std::endl;
         std::cerr << "0< closing connection: " << _connection->getId() << std::endl;
+        CommandRouter::clientStore->broadcast(res << Verb("QUIT") << "Fatal error!");
         _client->close();
         _connectionStore->remove(_connection->getId());
     }

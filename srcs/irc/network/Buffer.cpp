@@ -55,6 +55,12 @@ std::vector<std::string> InputBuffer::read(void)
     return messages;
 }
 
+void InputBuffer::clear(void)
+{
+    memset(_buffer, 0, BUFFER_SIZE);
+    _position = 0;
+}
+
 InputBuffer::NoSpaceLeftException::NoSpaceLeftException(const char* what)
     : Error(what) {}
 

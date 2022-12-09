@@ -24,6 +24,8 @@ class InputBuffer
 
         std::vector<std::string> read(void);
 
+        void clear(void);
+
         struct NoSpaceLeftException : Error
         {
             NoSpaceLeftException(const char* what);

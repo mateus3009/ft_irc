@@ -11,6 +11,9 @@ void Help::handler(Payload& p)
     {
         Message res = p.res << "*";
         p.client->send(res << RPL_HELPSTART << "** Help System **");
+        p.client->send(res << RPL_ENDOFHELP << "The commands below are available!");
+        for (std::map<std::string, CommandRegister>::iterator it = CommandRouter::_commands.begin(); it != CommandRouter::_commands.end(); ++it)
+            p.client->send(res << RPL_ENDOFHELP << it->first);
         p.client->send(res << RPL_ENDOFHELP << "Try /HELP <command> for specific help");
         return ;
     }
@@ -196,13 +199,6 @@ void Cap::handler(Payload& p)
     p.client->send(p.res << ERR_INVALIDCAPCMD << command << "Invalid CAP command");
 }
 
-/* Error */
-
-bool ErrorC::isRegistered = CommandRouter::add("ERROR", (CommandRegister) {
-    .command = ErrorC::handler, .isRegistered = false, .paramsMin = 0});
-
-void ErrorC::handler(Payload&) {}
-
 /* Notice */
 
 bool Notice::isRegistered = CommandRouter::add("NOTICE", (CommandRegister) {
@@ -301,7 +297,6 @@ bool Mode::isRegistered = CommandRouter::add("MODE", (CommandRegister) {
 void Mode::handler(Payload& p)
 {
     p.client->send(p.res << RPL_UMODEIS << "ir");
-    // TODO
 }
 
 /* Whois */
