@@ -69,7 +69,7 @@ class Channel
 
         void remove(const std::string& nickname);
 
-        void broadcast(const Message& msg);
+        void broadcast(const Message& msg, const std::string& author = "");
 
         std::set<shared_ptr<Membership> >::iterator begin(void) const;
 

@@ -124,12 +124,12 @@ shared_ptr<Client> ClientStore::find(const std::string& nickname)
     return it->second;
 }
 
-void ClientStore::broadcast(const Message& msg)
+void ClientStore::broadcast(const Message& msg, const std::string& author)
 {
     for (std::map<int, shared_ptr<Client> >::iterator it = _clients.begin();
         it != _clients.end(); ++it)
     {
-        if (it->second->isRegistered)
+        if (it->second->isRegistered && it->second->getNickname() != author)
             it->second->send(msg);
     }
 }

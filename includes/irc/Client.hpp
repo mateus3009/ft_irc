@@ -97,7 +97,7 @@ class ClientStore
 
         shared_ptr<Client> find(const std::string& nickname);
 
-        void broadcast(const Message& msg);
+        void broadcast(const Message& msg, const std::string& author = "");
 
     public:
         struct ClientAlreadyExistsException : public Error

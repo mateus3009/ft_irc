@@ -100,12 +100,13 @@ void Channel::remove(const std::string& nickname)
         _store->remove(_name);
 }
 
-void Channel::broadcast(const Message& msg)
+void Channel::broadcast(const Message& msg, const std::string& author)
 {
     std::set<shared_ptr<Membership> >::iterator it = _memberships.begin();
     while (it != _memberships.end())
     {
-        (*it)->getClient()->send(msg);
+        if ((*it)->getClient()->getNickname() != author)
+            (*it)->getClient()->send(msg);
         ++it;
     }
 }

@@ -50,7 +50,7 @@ void Quit::handler(Payload& p)
         reason.append(p.req.params.front());
 
     if (p.client->isRegistered)
-        p.clientStore->broadcast(Message() << p.client->getSource() << Verb("QUIT") << reason);
+        p.clientStore->broadcast(Message() << p.client->getSource() << Verb("QUIT") << reason, p.client->getNickname());
 }
 
 /* Welcome */
@@ -73,7 +73,7 @@ bool Pass::isRegistered = CommandRouter::add("PASS", (CommandRegister) {
 void Pass::handler(Payload& p)
 {
     if (p.client->isRegistered || p.client->hasPassword)
-        p.clientStore->broadcast(p.res << ERR_ALREADYREGISTERED << "PASS" << "You may not reregister");
+        p.client->send(p.res << ERR_ALREADYREGISTERED << "PASS" << "You may not reregister");
 
     if (p.req.params.front() != p.serverContext->password)
     {
@@ -108,14 +108,16 @@ void Nick::handler(Payload& p)
     catch(const Client::InvalidNicknameException&)
     {
         p.client->send(p.res << ERR_ERRONEUSNICKNAME << nickname << "Erroneus nickname");
+        return ;
     }
     catch(const Client::NicknameIsAlreadyInUseException& e)
     {
         p.client->send(p.res << ERR_NICKNAMEINUSE << nickname << "Nickname is already in use");
+        return ;
     }
 
     if (p.client->isRegistered)
-        p.clientStore->broadcast(Message() << olsSource << Verb("NICK") << nickname);
+        p.clientStore->broadcast(Message() << olsSource << Verb("NICK") << nickname, p.client->getNickname());
 
     if (!p.client->isRegistered
         && !p.client->getUsername().empty()
@@ -138,7 +140,7 @@ bool User::isRegistered = CommandRouter::add("USER", (CommandRegister) {
 void User::handler(Payload& p)
 {
     if (p.client->isRegistered || !p.client->getUsername().empty())
-        p.clientStore->broadcast(p.res << ERR_ALREADYREGISTERED << "USER" << "You may not reregister");
+        p.client->send(p.res << ERR_ALREADYREGISTERED << "USER" << "You may not reregister");
 
     p.client->setUsername(p.req.params[0]);
 
@@ -217,7 +219,7 @@ void Notice::handler(Payload& p)
             try
             {
                 shared_ptr<Channel> c = p.channelStore->find(*it);
-                c->broadcast(Message() << p.client->getSource() << Verb("NOTICE") << *it << p.req.params[1]);
+                c->broadcast(Message() << p.client->getSource() << Verb("NOTICE") << *it << p.req.params[1], p.client->getNickname());
             }
             catch(const ChannelStore::ChannelNotFoundException&) {}
         }
@@ -250,7 +252,7 @@ void Privmsg::handler(Payload& p)
             {
                 shared_ptr<Channel> c = p.channelStore->find(*it);
                 c->find(p.client->getNickname());
-                c->broadcast(Message() << p.client->getSource() << Verb("PRIVMSG") << *it << p.req.params[1]);
+                c->broadcast(Message() << p.client->getSource() << Verb("PRIVMSG") << *it << p.req.params[1], p.client->getNickname());
             }
             else
             {
@@ -358,7 +360,7 @@ void Join::handler(Payload& p)
             {
                 c->add(p.client);
 
-                c->broadcast(Message() << p.client->getSource() << Verb("JOIN") << targets[index]);
+                c->broadcast(Message() << p.client->getSource() << Verb("JOIN") << targets[index], p.client->getNickname());
 
                 if (!c->getTopic().empty())
                     p.client->send(p.res << RPL_TOPIC << c->getTopic());
