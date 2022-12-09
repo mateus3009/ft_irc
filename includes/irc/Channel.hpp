@@ -110,6 +110,10 @@ class ChannelStore
 
         void remove(const std::string& name);
 
+        std::set<shared_ptr<Channel> >::iterator begin(void);
+
+        std::set<shared_ptr<Channel> >::iterator end(void);
+
         struct ChannelAlreadyExistsException : public Error
         {
             ChannelAlreadyExistsException(const char* what);

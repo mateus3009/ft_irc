@@ -181,6 +181,16 @@ void ChannelStore::remove(const std::string& name)
         _channels.erase(it);
 }
 
+std::set<shared_ptr<Channel> >::iterator ChannelStore::begin(void)
+{
+    return _channels.begin();
+}
+
+std::set<shared_ptr<Channel> >::iterator ChannelStore::end(void)
+{
+    return _channels.end();
+}
+
 ChannelStore::ChannelAlreadyExistsException::ChannelAlreadyExistsException(
     const char* what) : Error(what) {}
 

@@ -47,7 +47,7 @@ void Quit::handler(Payload& p)
 
     std::string reason = "Quit: ";
     if (!p.req.params.empty())
-        reason.append(p.req.params.front());
+        reason = reason.append(p.req.params.front());
 
     if (p.client->isRegistered)
         p.clientStore->broadcast(Message() << p.client->getSource() << Verb("QUIT") << reason, p.client->getNickname());
@@ -335,7 +335,18 @@ void Join::handler(Payload& p)
 {
     if (p.req.params.size() == 1 && p.req.params.front() == "0")
     {
-        p.client->send(p.res << ERR_UNKNOWNERROR << "JOIN" << "0" << "Not implemented!");
+        for (std::set<shared_ptr<Channel> >::iterator it = p.channelStore->begin(); it != p.channelStore->end(); ++it)
+        {
+            try
+            {
+                shared_ptr<Channel> c = *it;
+                c->find(p.client->getNickname());
+                c->broadcast(Message() << p.client->getSource() << Verb("PART") << c->getName() << "Reason: Leaving all channels");
+                c->remove(p.client->getNickname());
+            }
+            catch(const ChannelStore::ChannelNotFoundException&) {}
+            catch(const Channel::ClientNotFoundException&) {}
+        }
         return ;
     }
 
@@ -422,4 +433,35 @@ void Topic::handler(Payload& p)
         p.client->send(p.res << ERR_NOTONCHANNEL << target << "You're not on that channel");
     }
 
+}
+
+/* Part */
+
+bool Part::isRegistered = CommandRouter::add("PART", (CommandRegister) {
+    .command = Part::handler, .isRegistered = true, .paramsMin = 1});
+
+void Part::handler(Payload& p)
+{
+    std::vector<std::string> targets = split(p.req.params.front(), ',');
+    std::string reason = "Reason: ";
+    if (p.req.params.size() > 1)
+        reason = reason.append(p.req.params[1]);
+    for (std::vector<std::string>::iterator it = targets.begin(); it != targets.end(); ++it)
+    {
+        try
+        {
+            shared_ptr<Channel> c = p.channelStore->find(*it);
+            c->find(p.client->getNickname());
+            c->broadcast(Message() << p.client->getSource() << Verb("PART") << *it << reason);
+            c->remove(p.client->getNickname());
+        }
+        catch(const ChannelStore::ChannelNotFoundException&)
+        {
+            p.client->send(p.res << ERR_NOSUCHCHANNEL << *it << "No such channel");
+        }
+        catch(const Channel::ClientNotFoundException&)
+        {
+            p.client->send(p.res << ERR_NOTONCHANNEL << *it << "You're not on that channel");
+        }
+    }
 }

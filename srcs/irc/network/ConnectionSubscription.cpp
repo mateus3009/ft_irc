@@ -21,45 +21,55 @@ ConnectionSubscription::ConnectionSubscription(
 
 void ConnectionSubscription::handle(const short& events)
 {
-    if (events & POLLOUT)
+    try
     {
-        try
+        if (events & POLLOUT)
         {
-            _output.flush();
-            if (!_output.queued())
-                update(POLLIN);
-        }
-        catch(const Error& e)
-        {
-            std::cerr << "0< " << e.what() << std::endl;
-            _client->close();
-            _connectionStore->remove(_connection->getId());
-            return ;
-        }
-    }
-
-    if (events & POLLIN)
-    {
-        try
-        {
-            std::vector<std::string> msgs = _input.read();
-            for (std::vector<std::string>::iterator it = msgs.begin(); it != msgs.end(); ++it)
+            try
             {
-                Message msg = Message(*it);
-                CommandRouter::call(msg, _client);
+                _output.flush();
+                if (!_output.queued())
+                    update(POLLIN);
+            }
+            catch(const Error& e)
+            {
+                std::cerr << "0< " << e.what() << std::endl;
+                _client->close();
+                _connectionStore->remove(_connection->getId());
+                return ;
             }
         }
-        catch(const InputBuffer::ClosedConnectionException& e)
+
+        if (events & POLLIN)
         {
-            std::cerr << "0< " << e.what() << std::endl;
+            try
+            {
+                std::vector<std::string> msgs = _input.read();
+                for (std::vector<std::string>::iterator it = msgs.begin(); it != msgs.end(); ++it)
+                {
+                    Message msg = Message(*it);
+                    CommandRouter::call(msg, _client);
+                }
+            }
+            catch(const InputBuffer::ClosedConnectionException& e)
+            {
+                std::cerr << "0< " << e.what() << std::endl;
+                _client->close();
+                _connectionStore->remove(_connection->getId());
+                return ;
+            }
+        }
+
+        if ((events & (POLLHUP | POLLERR | POLLNVAL) || _isClosing) && !_output.queued())
+        {
+            std::cerr << "0< closing connection: " << _connection->getId() << std::endl;
             _client->close();
             _connectionStore->remove(_connection->getId());
-            return ;
         }
     }
-
-    if ((events & (POLLHUP | POLLERR | POLLNVAL) || _isClosing) && !_output.queued())
+    catch(const std::exception& e)
     {
+        std::cerr << "0< Unkown erro on socket " <<  _connection->getId() << ": " << e.what() << std::endl;
         std::cerr << "0< closing connection: " << _connection->getId() << std::endl;
         _client->close();
         _connectionStore->remove(_connection->getId());

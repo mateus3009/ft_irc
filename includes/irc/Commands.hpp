@@ -117,4 +117,11 @@ struct Topic
     static void handler(Payload& p);
 };
 
+struct Part
+{
+    static bool isRegistered;
+
+    static void handler(Payload& p);
+};
+
 #endif
