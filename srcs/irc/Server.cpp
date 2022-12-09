@@ -2,9 +2,9 @@
 
 /* Server */
 
-Server::Server(const char* port, const char* hostname, const char* password)
+Server::Server(const char* port, const char* password)
 {
-    SocketListener socketListener(port, hostname);
+    SocketListener socketListener(port);
     init(socketListener, password);
 }
 

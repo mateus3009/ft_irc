@@ -12,11 +12,7 @@ int main(int argc, char** argv)
         if (argc > 2)
             password = argv[2];
 
-        char* hostname = (char *)NULL;
-        if (argc > 3)
-            hostname = argv[3];
-
-        Server s(port, hostname, password);
+        Server s(port, password);
     }
     catch(const std::exception& e)
     {
