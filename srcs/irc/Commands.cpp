@@ -367,7 +367,7 @@ void Join::handler(Payload& p)
         try
         {
             shared_ptr<Channel> c = p.channelStore->find(targets[index]);
-            if (c->getKey() == passwords[index])
+            if (c->getKey() == passwords[index] || p.client->isOperator)
             {
                 c->add(p.client);
 
@@ -375,8 +375,8 @@ void Join::handler(Payload& p)
 
                 if (!c->getTopic().empty())
                     p.client->send(p.res << RPL_TOPIC << c->getTopic());
-                    // TODO enviar namreply corretamente
-                p.client->send(p.res << RPL_NAMREPLY  << "=" << c->getName() << p.client->getNickname());
+                for (std::set<shared_ptr<Membership> >::iterator it = c->begin(); it != c->end(); ++it)
+                    p.client->send(p.res << RPL_NAMREPLY  << "=" << c->getName() << (*it)->getClient()->getNickname());
                 p.client->send(p.res << RPL_ENDOFNAMES << c->getName() << "End of /NAMES list");
                 return ;
             }
@@ -390,8 +390,8 @@ void Join::handler(Payload& p)
                 shared_ptr<Channel> c = p.channelStore->add(p.client, targets[index]);
                 c->setKey(passwords[index]);
                 p.client->send(p.res << Verb("Mode") << targets[index] << "+q" << p.client->getNickname());
-                    // TODO enviar namreply corretamente
-                p.client->send(p.res << RPL_NAMREPLY  << "=" << c->getName() << p.client->getNickname());
+                for (std::set<shared_ptr<Membership> >::iterator it = c->begin(); it != c->end(); ++it)
+                    p.client->send(p.res << RPL_NAMREPLY  << "=" << c->getName() << (*it)->getClient()->getNickname());
                 p.client->send(p.res << RPL_ENDOFNAMES << c->getName() << "End of /NAMES list");
             }
             catch(const Channel::InvalidChannelNameException&)
@@ -417,12 +417,22 @@ void Topic::handler(Payload& p)
     try
     {
         shared_ptr<Channel> c = p.channelStore->find(target);
-        c->find(p.client->getNickname());
+        shared_ptr<Membership> m;
+        if (!p.client->isOperator)
+            m = c->find(p.client->getNickname());
+        if (p.req.params.size() > 1)
+        {
+            if (!p.client->isOperator && !m->isFounder())
+            {
+                p.client->send(p.res << ERR_CHANOPRIVSNEEDED << target << "You're not channel operator");
+                return ;
+            }
+            c->setTopic(p.req.params[1]);
+        }
         if (c->getTopic().empty())
             p.client->send(p.res << RPL_NOTOPIC << target << "No topic is set");
         else
             p.client->send(p.res << RPL_TOPIC << target << c->getTopic());
-        // TODO alterar topic
     }
     catch(const ChannelStore::ChannelNotFoundException&)
     {
