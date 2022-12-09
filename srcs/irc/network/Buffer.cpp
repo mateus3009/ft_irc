@@ -1,8 +1,9 @@
-#include "network/Buffer.hpp"
+#include "irc/network/Buffer.hpp"
 
 /* InputBuffer */
 
-InputBuffer::InputBuffer(const SocketConnection& reader) : _reader(reader), _buffer(), _position(0)
+InputBuffer::InputBuffer(const shared_ptr<SocketConnection>& connection)
+    : _connection(connection), _buffer(), _position(0)
 {
     memset(_buffer, 0, BUFFER_SIZE);
 }
@@ -10,13 +11,14 @@ InputBuffer::InputBuffer(const SocketConnection& reader) : _reader(reader), _buf
 std::vector<std::string> InputBuffer::read(void)
 {
     if (_position == BUFFER_SIZE)
-        throw InputBuffer::NoSpaceLeftException("The buffer has no space left!");
+        throw InputBuffer::NoSpaceLeftException(
+            "The buffer has no space left!");
 
-    const int n = _reader.receive(_buffer + _position, BUFFER_SIZE - _position);
+    const int n = _connection->read(
+        _buffer + _position, BUFFER_SIZE - _position);
     std::vector<std::string> messages;
-    if (n <= 0)
-        return messages;
-
+    if (n == 0)
+        throw ClosedConnectionException("Connection closed by foreign host");
 
     _position += n;
 
@@ -26,7 +28,8 @@ std::vector<std::string> InputBuffer::read(void)
     size_t index = 0;
     while (index < _position)
     {
-        while (index < _position && (_buffer[index] == '\0' || strchr(" \t\r\n", _buffer[index]) != NULL))
+        while (index < _position && (_buffer[index] == '\0'
+            || strchr(" \t\r\n", _buffer[index]) != NULL))
             ++index;
         if (index == _position)
             break ;
@@ -52,13 +55,21 @@ std::vector<std::string> InputBuffer::read(void)
     return messages;
 }
 
-InputBuffer::NoSpaceLeftException::NoSpaceLeftException(const char* what) : std::runtime_error(what) {}
+InputBuffer::NoSpaceLeftException::NoSpaceLeftException(const char* what)
+    : Error(what) {}
+
+InputBuffer::ClosedConnectionException::ClosedConnectionException(const char* what)
+    : Error(what) {}
 
 /* OutputBuffer */
 
-OutputBuffer::OutputBuffer(const SocketConnection& writer) : _writer(writer), _messages(), _position(0) {}
+OutputBuffer::OutputBuffer(const shared_ptr<SocketConnection>& connection)
+    : _connection(connection), _messages(), _position(0) {}
 
-void OutputBuffer::write(const std::string& str) { _messages.push_back(std::string(str).append("\r\n")); }
+void OutputBuffer::write(const std::string& str)
+{
+    _messages.push_back(std::string(str).append("\r\n"));
+}
 
 void OutputBuffer::flush(void)
 {
@@ -67,7 +78,8 @@ void OutputBuffer::flush(void)
     {
         while (_position < it->size())
         {
-            const int n = _writer.send(it->c_str() + _position, it->size() - _position);
+            const int n = _connection->write(
+                it->c_str() + _position, it->size() - _position);
             if (n <= 0)
                 return ;
             _position += n;
