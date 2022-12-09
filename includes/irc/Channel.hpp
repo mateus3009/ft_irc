@@ -1,54 +1,54 @@
-#ifndef CHANNEL_HPP
-# define CHANNEL_HPP
+#ifndef CHAT_HPP
+# define CHAT_HPP
 
-# include <string>
 # include <set>
-# include <algorithm>
 
-# include "../utils/shared_ptr.hpp"
-# include "utils/Modes.hpp"
 # include "Client.hpp"
-
-class Channel;
 
 class Client;
 
-struct Membership : public Modes
+class Channel;
+
+struct Membership
 {
     private:
-        shared_ptr<Client>  _client;
+        const shared_ptr<Client> _client;
+
+        bool _isFounder;
+
+        bool _isModerator;
 
     public:
-        Membership(shared_ptr<Client> client, const unsigned int& modes = 0);
+        Membership(shared_ptr<Client> client);
 
         shared_ptr<Client> getClient(void) const;
 
+        bool isFounder(void) const;
+
+        bool isModerator(void) const;
+
+    friend class Channel;
 };
 
 bool operator==(const Membership& l, const Membership& r);
-
-bool operator==(const Membership& m, const Client& c);
 
 bool operator<(const Membership& l, const Membership& r);
 
 class ChannelStore;
 
-class Channel : public Modes
+class Channel
 {
     private:
-        const std::string                   _name;
+        const std::string _name;
 
-        std::string                         _topic;
+        std::string _topic;
 
-        std::string                         _key;
+        std::string _key;
 
-        std::set<shared_ptr<Membership> >   _memberships;
+        std::set<shared_ptr<Membership> > _memberships;
 
-        ChannelStore&                       _store;
-
+        ChannelStore* _store;
     public:
-        typedef std::set<shared_ptr<Membership> >::iterator iterator;
-
         Channel(const std::string& name, shared_ptr<Client> founder, ChannelStore& store);
 
         std::string getName(void) const;
@@ -69,33 +69,30 @@ class Channel : public Modes
 
         void broadcast(const Message& msg);
 
-        iterator begin(void) const;
+        std::set<shared_ptr<Membership> >::iterator begin(void) const;
 
-        iterator end(void) const;
+        std::set<shared_ptr<Membership> >::iterator end(void) const;
 
-        struct ClientIsAlreadyAMemberException : public std::runtime_error
+        struct InvalidChannelNameException : public Error
+        {
+            InvalidChannelNameException(const char* what);
+        };
+
+        struct ClientIsAlreadyAMemberException : public Error
         {
             ClientIsAlreadyAMemberException(const char* what);
         };
 
-        struct ClientNotFoundException : public std::runtime_error
+        struct ClientNotFoundException : public Error
         {
             ClientNotFoundException(const char* what);
         };
 
-    private:
-        struct ClientMessageSender
-        {
-            const Message& msg;
-
-            void operator()(shared_ptr<Membership> membership);
-        };
-
 };
 
-bool operator==(const Channel& l, const Channel& r);
-
 bool operator==(const Channel& channel, const std::string& name);
+
+bool operator==(const Channel& l, const Channel& r);
 
 bool operator<(const Channel& l, const Channel& r);
 
@@ -105,28 +102,23 @@ class ChannelStore
         std::set<shared_ptr<Channel> >  _channels;
 
     public:
-        typedef std::set<shared_ptr<Channel> >::const_iterator iterator;
-
-        void add(shared_ptr<Client> client, const std::string& name);
+        shared_ptr<Channel> add(shared_ptr<Client> client, const std::string& name);
 
         shared_ptr<Channel> find(const std::string& name);
 
-        void remove(const shared_ptr<Channel>& client);
+        void remove(const std::string& name);
 
-        iterator begin(void) const;
-
-        iterator end(void) const;
-
-        struct ChannelAlreadyExistsException : public std::runtime_error
+        struct ChannelAlreadyExistsException : public Error
         {
             ChannelAlreadyExistsException(const char* what);
         };
 
-        struct ChannelNotFoundException : public std::runtime_error
+        struct ChannelNotFoundException : public Error
         {
             ChannelNotFoundException(const char* what);
         };
 
 };
+
 
 #endif

@@ -3,39 +3,42 @@
 
 # include <map>
 # include <string>
-# include <stdexcept>
-# include <string>
+# include <algorithm>
 
 # include "Message.hpp"
 # include "../utils/shared_ptr.hpp"
-# include "utils/Tools.hpp"
-# include "utils/Modes.hpp"
-# include "IrcConnection.hpp"
-# include "Channel.hpp"
-
-class IrcConnection;
+# include "../network/Socket.hpp"
+# include "../utils/Tools.hpp"
+# include "network/ConnectionSubscription.hpp"
 
 class ClientStore;
 
-class Client : public Modes
+class ConnectionSubscription;
+
+class Client
 {
     private:
-        std::string         			_nickname;
+        ClientStore* _store;
 
-        std::string         			_username;
+        ConnectionSubscription* _connection;
 
-        const std::string   			_hostname;
+        std::string _nickname;
 
-        std::string         			_realName;
+        std::string _username;
 
-        IrcConnection&      			_connection;
+        std::string _hostname;
 
-        ClientStore&        			_store;
+        std::string _realName;
 
-		std::set<std::string>			_channels;
+    protected:
+        Client(ClientStore& store, ConnectionSubscription& connection);
 
     public:
-        Client(const std::string& hostname, IrcConnection& connection, ClientStore& store);
+        bool isRegistered;
+
+        bool hasPassword;
+
+        bool usingCap;
 
         std::string getNickname(void) const;
 
@@ -47,65 +50,64 @@ class Client : public Modes
 
         std::string getHostname(void) const;
 
+        void setHostname(const std::string& hostname);
+
         std::string getRealName(void) const;
 
         void setRealName(const std::string& realName);
 
         void send(const Message& msg);
 
-        void close(void);
+        int getId(void) const;
 
-		bool addChannel(std::string ch);
+        void close(void);
 
         Message::Source getSource(void) const;
 
-        struct AlphaNumericConstraintViolationException : public std::runtime_error
+    public:
+        struct InvalidNicknameException : public Error
         {
-            AlphaNumericConstraintViolationException(const char* what);
+            InvalidNicknameException(const char* what);
         };
 
-        struct NicknameIsAlreadyInUseException : public std::runtime_error
+        struct NicknameIsAlreadyInUseException : public Error
         {
             NicknameIsAlreadyInUseException(const char* what);
         };
 
-        struct UsernameIsAlreadyDefinedException : public std::runtime_error
+        struct AlreadyDefinedException : public Error
         {
-            UsernameIsAlreadyDefinedException(const char* what);
+            AlreadyDefinedException(const char* what);
         };
 
+    friend class ClientStore;
 };
 
-bool operator==(const Client& l, const Client& r);
-
-bool operator==(const Client& client, const std::string& nickname);
-
-bool operator<(const Client& l, const Client& r);
+bool operator==(const Client& c, const std::string n);
 
 class ClientStore
 {
     private:
-        std::map<int, shared_ptr<Client> >   _clients;
+        std::map<int, shared_ptr<Client> >  _clients;
 
     public:
-        typedef std::map<int, shared_ptr<Client> >::iterator iterator;
+        shared_ptr<Client> add(ConnectionSubscription& connection);
 
-        shared_ptr<Client> add(const int& id, const std::string& hostname, IrcConnection& connection);
+        void remove(const int& id);
 
         shared_ptr<Client> find(const std::string& nickname);
 
         void broadcast(const Message& msg);
 
-        void remove(shared_ptr<Client> client);
-
-        struct ClientNotFoundException : public std::runtime_error
+    public:
+        struct ClientAlreadyExistsException : public Error
         {
-            ClientNotFoundException(const char* what);
+            ClientAlreadyExistsException(const char* what);
         };
 
-        struct ClientAlreadyExists : public std::runtime_error
+        struct ClientNotFoundException : public Error
         {
-            ClientAlreadyExists(const char* what);
+            ClientNotFoundException(const char* what);
         };
 
     private:
@@ -114,20 +116,6 @@ class ClientStore
             const std::string& nickname;
 
             bool operator()(std::pair<int, shared_ptr<Client> > item);
-        };
-
-        struct ClientPredicate
-        {
-            shared_ptr<Client> client;
-
-            bool operator()(std::pair<int, shared_ptr<Client> > item);
-        };
-
-        struct ClientMessageSender
-        {
-            const Message& msg;
-
-            void operator()(std::pair<int, shared_ptr<Client> > item);
         };
 
 };

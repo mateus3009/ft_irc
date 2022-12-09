@@ -1,30 +1,23 @@
-#include "network/Server.hpp"
-#include "irc/IrcConnection.hpp"
-#include "irc/Router.hpp"
-#include "irc/Client.hpp"
-#include "irc/Channel.hpp"
-#include "irc/IrcServer.hpp"
-#include "irc/commands/commons/UnkownCommand.hpp"
 #include <iostream>
 
-int main(int argc, const char** argv)
-{
-    if (argc < 3)
-    {
-        std::cout << "Usage: " << argv[0] << " <port> <pass>" << std::endl;
-        return 1;
-    }
-    ClientStore clientStore;
-    ChannelStore channelStore;
-    IrcServer ircServer;
-    ircServer.setPassword(argv[2]);
-    ircServer.setServerName("42irc");
-    Router::setNotFound(UnkownCommand::handle);
-    Router::setClientStore(&clientStore);
-    Router::setChannelStore(&channelStore);
-    Router::setIrcServer(&ircServer);
-    Server<IrcConnection> server("localhost", argv[1]);
+#include "network/SocketSSL.hpp"
+#include "irc/Server.hpp"
 
-    server.listen();
+int main(int argc, char** argv)
+{
+    //const SSLContext ctx("./cert.pem", "./key.pem");
+
+    //const SocketListenerSSL listener(&ctx);
+
+    char* port = (char *)"0";
+    if (argc > 1)
+        port = argv[1];
+
+    char* hostname = (char *)NULL;
+    if (argc > 2)
+        hostname = argv[2];
+
+    Server s(port, hostname);
+
     return 0;
-}
+};

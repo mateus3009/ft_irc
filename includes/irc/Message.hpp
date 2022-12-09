@@ -11,19 +11,19 @@ struct Message
 {
     struct Source
     {
-        std::string             nickname;
+        std::string nickname;
 
-        std::string             username;
+        std::string username;
 
-        std::string             hostname;
+        std::string hostname;
 
         std::string toString(void) const;
 
     } source;
 
-    std::string                 verb;
+    std::string verb;
 
-    std::vector<std::string>    params;
+    std::vector<std::string> params;
 
     Message(void);
 
@@ -48,6 +48,7 @@ struct Verb
     const std::string v;
 
     Verb(const std::string& verb);
+
 };
 
 Message operator<<(const Message& msg, const Message::Source& src);

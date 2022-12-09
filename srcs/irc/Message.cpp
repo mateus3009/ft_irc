@@ -1,5 +1,7 @@
 #include "irc/Message.hpp"
 
+/* Message */
+
 std::string Message::Source::toString(void) const
 {
     std::stringstream stream;
@@ -133,7 +135,8 @@ std::string Message::toString(void) const
 
     stream << this->verb;
 
-    for (std::vector<std::string>::const_iterator it = params.begin(); it != params.end(); ++it)
+    for (std::vector<std::string>::const_iterator it = params.begin();
+        it != params.end(); ++it)
     {
         stream << ' ';
         if (it->find(' ') != std::string::npos || it + 1 == params.end())
