@@ -432,7 +432,6 @@ void Topic::handler(Payload& p)
     {
         p.client->send(p.res << ERR_NOTONCHANNEL << target << "You're not on that channel");
     }
-
 }
 
 /* Part */
@@ -463,5 +462,52 @@ void Part::handler(Payload& p)
         {
             p.client->send(p.res << ERR_NOTONCHANNEL << *it << "You're not on that channel");
         }
+    }
+}
+
+/* Who */
+
+bool Who::isRegistered = CommandRouter::add("WHO", (CommandRegister) {
+    .command = Who::handler, .isRegistered = true, .paramsMin = 1});
+
+void Who::handler(Payload& p)
+{
+    std::string& target = p.req.params.front();
+    try
+    {
+        if (strchr("&#", *target.begin()) != NULL)
+        {
+            shared_ptr<Channel> c = p.channelStore->find(target);
+            c->find(p.client->getNickname());
+            for (std::set<shared_ptr<Membership> >::iterator it = c->begin(); it != c->end(); ++it)
+            {
+                shared_ptr<Client> client = (*it)->getClient();
+                p.client->send(p.res << RPL_WHOREPLY << c->getName()
+                << client->getUsername() << client->getHostname()
+                << p.serverContext->serverName << client->getNickname()
+                << "H" << std::string("0 ").append(client->getRealName()));
+            }
+        }
+        else
+        {
+            shared_ptr<Client> c = p.clientStore->find(target);
+            p.client->send(p.res << RPL_WHOREPLY << "*"
+                << p.client->getUsername() << p.client->getHostname()
+                << p.serverContext->serverName << p.client->getNickname()
+                << "H" << std::string("0 ").append(p.client->getRealName()));
+        }
+        p.client->send(p.res << RPL_ENDOFWHO << target << "End of WHO list");
+    }
+    catch(const ChannelStore::ChannelNotFoundException&)
+    {
+        p.client->send(p.res << ERR_NOSUCHCHANNEL << target << "No such channel");
+    }
+    catch(const Channel::ClientNotFoundException&)
+    {
+        p.client->send(p.res << ERR_NOTONCHANNEL << target << "You're not on that channel");
+    }
+    catch(const ClientStore::ClientNotFoundException&)
+    {
+        p.client->send(p.res << ERR_NOSUCHNICK << target << "No such nick/channel");
     }
 }

@@ -124,4 +124,11 @@ struct Part
     static void handler(Payload& p);
 };
 
+struct Who
+{
+    static bool isRegistered;
+
+    static void handler(Payload& p);
+};
+
 #endif
