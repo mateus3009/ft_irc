@@ -110,13 +110,13 @@ bool operator==(shared_ptr<T> left, R right)
 template <typename T>
 bool operator<(shared_ptr<T> left, shared_ptr<T> right)
 {
-    return *left == *right;
+    return *left < *right;
 };
 
 template <typename T, typename R>
 bool operator<(shared_ptr<T> left, T right)
 {
-    return *left == right;
+    return *left < right;
 };
 
 #endif

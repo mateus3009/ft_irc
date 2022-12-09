@@ -61,9 +61,7 @@ static void welcome(const Message& res, shared_ptr<Client>& client, const std::s
     client->send(res << RPL_YOURHOST << "Your host is " + serverName + ", running version 1.0");
     client->send(res << RPL_CREATED << ":This server was created 2022-10-14");
     client->send(res << RPL_MYINFO << serverName << "1.0" << "+q" << "+i");
-    client->send(res << RPL_ISUPPORT << "ACCEPT=30" << "AWAYLEN=200" << "BOT=B" << "CALLERID=g" << "CASEMAPPING=ascii" << "CHANLIMIT=#:20" << "CHANMODES=IXbeg,k,Hfjl,ACKMORTcimnprstz" << "CHANNELLEN=64" << "CHANTYPES=#" << "ELIST=CMNTU" << "ESILENCE=CcdiNnPpTtx" << "EXCEPTS=e" << ":are supported by this server");
-    client->send(res << RPL_ISUPPORT << "EXTBAN=,ACORTUacjrwz" << "HOSTLEN=64" << "INVEX=I" << "KEYLEN=32" << "KICKLEN=255" << "LINELEN=512" << "MAXLIST=I:100,X:100,b:100,e:100,g:100" << "MAXTARGETS=20" << "MODES=20" << "MONITOR=30" << "NAMELEN=128" << "NAMESX" << "NETWORK=Omega" << ":are supported by this server");
-    client->send(res << RPL_ISUPPORT << "NICKLEN=30" << "PREFIX=(qaohv)~&@%+" << "SAFELIST" << "SILENCE=32" << "STATUSMSG=~&@%+" << "TOPICLEN=307" << "UHNAMES" << "USERIP" << "USERLEN=10" << "USERMODES=,,s,BIRcgikorw" << "WHOX" << ":are supported by this server");
+    client->send(res << RPL_ISUPPORT << "CASEMAPPING=ascii" << "are supported by this server");
     client->isRegistered = true;
 }
 
@@ -109,21 +107,27 @@ void Nick::handler(Payload& p)
     }
     catch(const Client::InvalidNicknameException&)
     {
-        p.client->send(Message() << (Message::Source) {.nickname = p.serverContext->serverName} << ERR_ERRONEUSNICKNAME << nickname << "Erroneus nickname");
+        p.client->send(p.res << ERR_ERRONEUSNICKNAME << nickname << "Erroneus nickname");
     }
     catch(const Client::NicknameIsAlreadyInUseException& e)
     {
-        p.client->send(Message() << (Message::Source) {.nickname = p.serverContext->serverName} << ERR_NICKNAMEINUSE  << nickname << "Nickname is already in use");
+        p.client->send(p.res << ERR_NICKNAMEINUSE << nickname << "Nickname is already in use");
     }
 
     if (p.client->isRegistered)
         p.clientStore->broadcast(Message() << olsSource << Verb("NICK") << nickname);
 
     if (!p.client->isRegistered
-        &&(p.client->hasPassword || p.serverContext->password.empty())
         && !p.client->getUsername().empty()
         && !p.client->usingCap)
+    {
+        if (!p.serverContext->password.empty() && !p.client->hasPassword)
+        {
+            p.client->send(p.res << ERR_PASSWDMISMATCH << "Password was not supplied");
+            return ;
+        }
         welcome(p.res, p.client, p.serverContext->serverName);
+    }
 }
 
 /* User */
@@ -140,10 +144,16 @@ void User::handler(Payload& p)
 
     p.client->setRealName(p.req.params[3]);
 
-    if ((p.client->hasPassword || p.serverContext->password.empty())
-        && p.client->getNickname() != "*"
+    if (p.client->getNickname() != "*"
         && !p.client->usingCap)
+    {
+        if (!p.serverContext->password.empty() && !p.client->hasPassword)
+        {
+            p.client->send(p.res << ERR_PASSWDMISMATCH << "Password was not supplied");
+            return ;
+        }
         welcome(p.res, p.client, p.serverContext->serverName);
+    }
 }
 
 /* Cap */
@@ -168,10 +178,16 @@ void Cap::handler(Payload& p)
     if (command == "END")
     {
         p.client->usingCap = false;
-        if ((p.client->hasPassword || p.serverContext->password.empty())
-            && p.client->getNickname() != "*"
+        if (p.client->getNickname() != "*"
             && !p.client->getUsername().empty())
+        {
+            if (!p.serverContext->password.empty() && !p.client->hasPassword)
+            {
+                p.client->send(p.res << ERR_PASSWDMISMATCH << "Password was not supplied");
+                return ;
+            }
             welcome(p.res, p.client, p.serverContext->serverName);
+        }
         return ;
     }
 
@@ -201,7 +217,7 @@ void Notice::handler(Payload& p)
             try
             {
                 shared_ptr<Channel> c = p.channelStore->find(*it);
-                c->broadcast(Message() << p.client->getSource() << Verb("Notice") << *it << p.req.params[1]);
+                c->broadcast(Message() << p.client->getSource() << Verb("NOTICE") << *it << p.req.params[1]);
             }
             catch(const ChannelStore::ChannelNotFoundException&) {}
         }
@@ -210,7 +226,7 @@ void Notice::handler(Payload& p)
             try
             {
                 shared_ptr<Client> c = p.clientStore->find(*it);
-                c->send(Message() << p.client->getSource() << Verb("Notice") << *it << p.req.params[1]);
+                c->send(Message() << p.client->getSource() << Verb("NOTICE") << *it << p.req.params[1]);
             }
             catch(const ClientStore::ClientNotFoundException&) {}
         }
@@ -233,13 +249,13 @@ void Privmsg::handler(Payload& p)
             if (strchr("&#", *it->begin()) != NULL)
             {
                 shared_ptr<Channel> c = p.channelStore->find(*it);
-                c->find(p.client);
-                c->broadcast(Message() << p.client->getSource() << Verb("Notice") << *it << p.req.params[1]);
+                c->find(p.client->getNickname());
+                c->broadcast(Message() << p.client->getSource() << Verb("PRIVMSG") << *it << p.req.params[1]);
             }
             else
             {
                 shared_ptr<Client> c = p.clientStore->find(*it);
-                c->send(Message() << p.client->getSource() << Verb("Notice") << *it << p.req.params[1]);
+                c->send(Message() << p.client->getSource() << Verb("PRIVMSG") << *it << p.req.params[1]);
             }
         }
         catch(const ChannelStore::ChannelNotFoundException&)
@@ -388,7 +404,7 @@ void Topic::handler(Payload& p)
     try
     {
         shared_ptr<Channel> c = p.channelStore->find(target);
-        c->find(p.client);
+        c->find(p.client->getNickname());
         if (c->getTopic().empty())
             p.client->send(p.res << RPL_NOTOPIC << target << "No topic is set");
         else

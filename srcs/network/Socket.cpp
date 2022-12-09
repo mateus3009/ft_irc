@@ -97,6 +97,7 @@ SocketListener::SocketListener(const char* port, const char* hostname)
 
     int fd;
     addrinfo* p;
+    status = 1;
     for (p = res; p != NULL; p = p->ai_next)
     {
         fd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);

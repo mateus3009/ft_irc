@@ -30,6 +30,8 @@ struct Membership
     friend class Channel;
 };
 
+bool operator==(const Membership& l, const std::string& r);
+
 bool operator==(const Membership& l, const Membership& r);
 
 bool operator<(const Membership& l, const Membership& r);
@@ -63,9 +65,9 @@ class Channel
 
         shared_ptr<Membership> add(shared_ptr<Client> client);
 
-        shared_ptr<Membership> find(shared_ptr<Client> client);
+        shared_ptr<Membership> find(const std::string& nickname);
 
-        void remove(shared_ptr<Membership>& client);
+        void remove(const std::string& nickname);
 
         void broadcast(const Message& msg);
 

@@ -11,6 +11,13 @@ bool Membership::isFounder(void) const { return _isFounder; }
 
 bool Membership::isModerator(void) const { return _isModerator; }
 
+bool operator==(const Membership& l, const std::string& r)
+{
+    return strcasecmp(
+        l.getClient()->getNickname().c_str(),
+        r.c_str()) == 0;
+}
+
 bool operator==(const Membership& l, const Membership& r)
 {
     return strcasecmp(
@@ -22,7 +29,7 @@ bool operator<(const Membership& l, const Membership& r)
 {
     return strcasecmp(
         l.getClient()->getNickname().c_str(),
-        r.getClient()->getNickname().c_str()) < 0;
+        r.getClient()->getNickname().c_str());
 }
 
 static bool validChannelCharacter(unsigned char c)
@@ -69,25 +76,25 @@ shared_ptr<Membership> Channel::add(shared_ptr<Client> client)
     return membership;
 }
 
-shared_ptr<Membership> Channel::find(shared_ptr<Client> client)
+shared_ptr<Membership> Channel::find(const std::string& nickname)
 {
     std::set<shared_ptr<Membership> >::iterator it =
-        std::find(_memberships.begin(), _memberships.end(), client);
+        std::find(_memberships.begin(), _memberships.end(), nickname);
     if (it == _memberships.end())
         throw Channel::ClientNotFoundException(
             "The client is not a member of this channel!");
     return *it;
 }
 
-void Channel::remove(shared_ptr<Membership>& membership)
+void Channel::remove(const std::string& nickname)
 {
     std::set<shared_ptr<Membership> >::iterator it =
-        _memberships.find(membership);
+        std::find(_memberships.begin(), _memberships.end(), nickname);
     if (it == _memberships.end())
         throw Channel::ClientNotFoundException(
             "The client is not a member of this channel!");
 
-    _memberships.erase(membership);
+    _memberships.erase(it);
 
     if (_memberships.empty())
         _store->remove(_name);
