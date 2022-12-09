@@ -3,37 +3,48 @@
 
 # include <netdb.h>
 # include <arpa/inet.h>
-# include <string>
-# include <cerrno>
-# include <stdexcept>
-# include <cstring>
 
+# include "../utils/Error.hpp"
+# include "../utils/shared_ptr.hpp"
 # include "FileDescriptor.hpp"
 
-    class SocketConnection : public FileDescriptor, public Reader, public Writer
-    {
-        public:
-            SocketConnection();
+class Socket : public virtual FileDescriptor
+{
+    public:
+        Socket(const int& id = INVALID_FD);
 
-            SocketConnection(const int& fd);
+        sockaddr_storage getsockname(void) const;
 
-            SocketConnection(const SocketConnection& other);
+        static std::string getHostname(const sockaddr_storage& addr);
 
-            ssize_t send(const void* buf, const size_t& n, const int& flags = MSG_DONTWAIT | MSG_NOSIGNAL) const;
+        static unsigned int getPort(const sockaddr_storage& addr);
+};
 
-            ssize_t receive(void* buf, const size_t& n, const int& flags = MSG_DONTWAIT) const;
+class SocketConnection :
+    public virtual FileDescriptor,
+    public virtual FileDescriptorInteractive,
+    public virtual Socket
+{
+    public:
+        SocketConnection(const int& id = INVALID_FD);
 
-            std::string get_hostname(void) const;
+        virtual ssize_t read(void *buf, size_t nbytes) const;
 
-    };
+        virtual ssize_t write(const void *buf, size_t nbytes) const;
 
-    class SocketListener : public FileDescriptor
-    {
-        public:
-            SocketListener(const char* port = "0", const char* hostname = NULL);
+        sockaddr_storage getpeername(void) const;
+};
 
-            SocketConnection accept(void) const;
+std::ostream &operator<<(std::ostream& stream, const SocketConnection& socket);
 
-    };
+class SocketListener : public virtual Socket
+{
+    public:
+        SocketListener(const char* port = "0", const char* hostname = NULL);
+
+        virtual shared_ptr<SocketConnection> accept(void) const;
+};
+
+std::ostream &operator<<(std::ostream& stream, const SocketListener& socket);
 
 #endif

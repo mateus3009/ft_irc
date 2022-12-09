@@ -6,27 +6,32 @@
 # include <string>
 # include <cstring>
 
-# include "Socket.hpp"
+# include "../../network/Socket.hpp"
 
 # define BUFFER_SIZE 1024
 
 class InputBuffer
 {
     private:
-        const SocketConnection&     _reader;
+        shared_ptr<SocketConnection>    _connection;
 
-        char                        _buffer[BUFFER_SIZE];
+        char                            _buffer[BUFFER_SIZE];
 
-        size_t                      _position;
+        size_t                          _position;
 
     public:
-        InputBuffer(const SocketConnection& reader);
+        InputBuffer(const shared_ptr<SocketConnection>& connection);
 
         std::vector<std::string> read(void);
 
-        struct NoSpaceLeftException : std::runtime_error
+        struct NoSpaceLeftException : Error
         {
             NoSpaceLeftException(const char* what);
+        };
+
+        struct ClosedConnectionException : Error
+        {
+            ClosedConnectionException(const char* what);
         };
 
 };
@@ -34,14 +39,14 @@ class InputBuffer
 class OutputBuffer
 {
     private:
-        const SocketConnection&         _writer;
+        shared_ptr<SocketConnection>    _connection;
 
         std::list<std::string>          _messages;
 
         size_t                          _position;
 
     public:
-        OutputBuffer(const SocketConnection& writer);
+        OutputBuffer(const shared_ptr<SocketConnection>& connection);
 
         void write(const std::string& str);
 
