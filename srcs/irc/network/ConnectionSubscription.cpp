@@ -58,6 +58,13 @@ void ConnectionSubscription::handle(const short& events)
                 _connectionStore->remove(_connection->getId());
                 return ;
             }
+            catch(const InputBuffer::NoSpaceLeftException& e)
+            {
+                std::cerr << "0< " << e.what() << std::endl;
+                _client->close();
+                _connectionStore->remove(_connection->getId());
+                return ;
+            }
         }
 
         if ((events & (POLLHUP | POLLERR | POLLNVAL) || _isClosing) && !_output.queued())
