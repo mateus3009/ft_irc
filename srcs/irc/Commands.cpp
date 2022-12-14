@@ -296,7 +296,40 @@ bool Mode::isRegistered = CommandRouter::add("MODE", (CommandRegister) {
 
 void Mode::handler(Payload& p)
 {
-    p.client->send(p.res << RPL_UMODEIS << "ir");
+    if (p.req.params.size() == 0)
+    {
+        p.client->send(p.res << RPL_UMODEIS << "ir");
+        return ;
+    }
+
+    if (p.req.params.size() == 1)
+    {
+        const std::string& target = p.req.params.front();
+        try
+        {
+            if (strchr("&#", *target.begin()) != NULL)
+            {
+                shared_ptr<Channel> c = p.channelStore->find(target);
+                p.client->send(p.res << RPL_UMODEIS << (c->getKey().empty() ? "tn" : "tnk"));
+            }
+            else
+            {
+                shared_ptr<Client> c = p.clientStore->find(target);
+                p.client->send(p.res << RPL_UMODEIS << "ir");
+            }
+        }
+        catch(const ChannelStore::ChannelNotFoundException&)
+        {
+            p.client->send(p.res << ERR_CANNOTSENDTOCHAN << target << "No such channel");
+        }
+        catch(const ClientStore::ClientNotFoundException&)
+        {
+            p.client->send(p.res << ERR_NOSUCHNICK << target << "No such nick/channel");
+        }
+        return ;
+    }
+
+    p.client->send(p.res << ERR_UNKNOWNERROR << "MODE" << "command/subcommand could not be processed.");
 }
 
 /* Whois */
