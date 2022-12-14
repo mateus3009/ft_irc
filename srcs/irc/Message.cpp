@@ -8,7 +8,7 @@ std::string Message::Source::toString(void) const
 
     if (!this->nickname.empty())
     {
-        stream << ':' << this->nickname;
+        stream << this->nickname;
         if (!this->username.empty())
             stream << '!' << this->username;
         if (!this->hostname.empty())
@@ -132,7 +132,7 @@ std::string Message::toString(void) const
 {
     std::stringstream stream;
 
-    stream << this->source.toString();
+    stream << ':' << this->source.toString();
 
     stream << this->verb;
 

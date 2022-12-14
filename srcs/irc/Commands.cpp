@@ -58,13 +58,13 @@ void Quit::handler(Payload& p)
 
 /* Welcome */
 
-static void welcome(const Message& res, shared_ptr<Client>& client, const std::string serverName)
+static void welcome(shared_ptr<Client>& client, const ServerContext* serverContext)
 {
-    client->send(res << RPL_WELCOME << "Welcome to the " + serverName + " Network, " + client->getSource().toString());
-    client->send(res << RPL_YOURHOST << "Your host is " + serverName + ", running version 1.0");
-    client->send(res << RPL_CREATED << ":This server was created 2022-10-14");
-    client->send(res << RPL_MYINFO << serverName << "1.0" << "+q" << "+i");
-    client->send(res << RPL_ISUPPORT << "CASEMAPPING=ascii" << "are supported by this server");
+    client->send(Message() << (Message::Source) { .nickname = serverContext->serverName } << RPL_WELCOME << client->getNickname() << "Welcome to the " + serverContext->serverName + " Network, " + client->getSource().toString());
+    client->send(Message() << (Message::Source) { .nickname = serverContext->serverName } << RPL_YOURHOST << client->getNickname() << "Your host is " + serverContext->serverName + ", running version 1.0");
+    client->send(Message() << (Message::Source) { .nickname = serverContext->serverName } << RPL_CREATED << client->getNickname() << "This server was created 2022-10-14");
+    client->send(Message() << (Message::Source) { .nickname = serverContext->serverName } << RPL_MYINFO << client->getNickname() << serverContext->serverName << "1.0" << "+q" << "+i");
+    client->send(Message() << (Message::Source) { .nickname = serverContext->serverName } << RPL_ISUPPORT << client->getNickname() << "CASEMAPPING=ascii" << "are supported by this server");
     client->isRegistered = true;
 }
 
@@ -91,7 +91,7 @@ void Pass::handler(Payload& p)
     if (p.client->getNickname() != "*"
         && !p.client->getUsername().empty()
         && !p.client->usingCap)
-        welcome(p.res, p.client, p.serverContext->serverName);
+        welcome(p.client, p.serverContext);
 }
 
 /* Nick */
@@ -120,7 +120,7 @@ void Nick::handler(Payload& p)
     }
 
     if (p.client->isRegistered)
-        p.clientStore->broadcast(Message() << olsSource << Verb("NICK") << nickname, p.client->getNickname());
+        p.clientStore->broadcast(Message() << olsSource << Verb("NICK") << nickname);
 
     if (!p.client->isRegistered
         && !p.client->getUsername().empty()
@@ -131,7 +131,7 @@ void Nick::handler(Payload& p)
             p.client->send(p.res << ERR_PASSWDMISMATCH << "Password was not supplied");
             return ;
         }
-        welcome(p.res, p.client, p.serverContext->serverName);
+        welcome(p.client, p.serverContext);
     }
 }
 
@@ -157,7 +157,7 @@ void User::handler(Payload& p)
             p.client->send(p.res << ERR_PASSWDMISMATCH << "Password was not supplied");
             return ;
         }
-        welcome(p.res, p.client, p.serverContext->serverName);
+        welcome(p.client, p.serverContext);
     }
 }
 
@@ -191,7 +191,7 @@ void Cap::handler(Payload& p)
                 p.client->send(p.res << ERR_PASSWDMISMATCH << "Password was not supplied");
                 return ;
             }
-            welcome(p.res, p.client, p.serverContext->serverName);
+            welcome(p.client, p.serverContext);
         }
         return ;
     }
