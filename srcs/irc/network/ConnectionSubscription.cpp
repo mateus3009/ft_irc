@@ -49,7 +49,7 @@ void ConnectionSubscription::handle(const short& events)
             try
             {
                 std::vector<std::string> msgs = _input.read();
-                for (std::vector<std::string>::iterator it = msgs.begin(); it != msgs.end(); ++it)
+                for (std::vector<std::string>::iterator it = msgs.begin(); it != msgs.end() && !_isClosing; ++it)
                 {
                     Message msg = Message(*it);
                     CommandRouter::call(msg, _client);
