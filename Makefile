@@ -26,7 +26,7 @@ fclean :
 re : clean all
 
 test : $(NAME)
-	valgrind --leak-check=full --track-origins=yes -q ./$(NAME) 6667 42
+	valgrind --leak-check=full --track-origins=yes -q ./$(NAME) 8889 42
 
 $(NAME) : $(OBJECTS_SOURCE)
 	@$(COMPILER) $(COMPILER_FLAGS) $(OBJECTS_SOURCE) -o $(NAME)

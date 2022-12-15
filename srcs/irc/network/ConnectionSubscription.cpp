@@ -37,7 +37,8 @@ void ConnectionSubscription::handle(const short& events)
             catch(const Error& e)
             {
                 std::cerr << "0< " << e.what() << std::endl;
-                CommandRouter::clientStore->broadcast(res << Verb("QUIT") << "Fatal error!");
+                if (_client->isRegistered)
+                    CommandRouter::clientStore->broadcast(res << Verb("QUIT") << "Fatal error!");
                 _client->close();
                 _connectionStore->remove(_connection->getId());
                 return ;
@@ -58,7 +59,8 @@ void ConnectionSubscription::handle(const short& events)
             catch(const InputBuffer::ClosedConnectionException& e)
             {
                 std::cerr << "0< " << e.what() << std::endl;
-                CommandRouter::clientStore->broadcast(res << Verb("QUIT") << "Fatal error!");
+                if (_client->isRegistered)
+                    CommandRouter::clientStore->broadcast(res << Verb("QUIT") << "Fatal error!");
                 _client->close();
                 _connectionStore->remove(_connection->getId());
                 return ;
@@ -75,7 +77,8 @@ void ConnectionSubscription::handle(const short& events)
         if ((events & (POLLHUP | POLLERR | POLLNVAL) || _isClosing) && !_output.queued())
         {
             std::cerr << "0< closing connection: " << _connection->getId() << std::endl;
-            CommandRouter::clientStore->broadcast(res << Verb("QUIT") << "Fatal error!");
+            if (_client->isRegistered)
+                CommandRouter::clientStore->broadcast(res << Verb("QUIT") << "Fatal error!");
             _client->close();
             _connectionStore->remove(_connection->getId());
         }

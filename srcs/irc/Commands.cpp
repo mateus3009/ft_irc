@@ -302,7 +302,7 @@ void Mode::handler(Payload& p)
         return ;
     }
 
-    if (p.req.params.size() == 1)
+    if (p.req.params.size() <= 2)
     {
         const std::string& target = p.req.params.front();
         try
