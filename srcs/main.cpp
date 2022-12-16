@@ -4,15 +4,13 @@ int main(int argc, char** argv)
 {
     try
     {
-        char* port = (char *)"0";
-        if (argc > 1)
-            port = argv[1];
+        if (argc != 3)
+        {
+            std::cerr << "Usage " << argv[0] << " <port> <password>" << std::endl;
+            return 1;
+        }
 
-        char* password = (char *)"";
-        if (argc > 2)
-            password = argv[2];
-
-        Server s(port, password);
+        Server s(argv[1], argv[2]);
     }
     catch(const std::exception& e)
     {

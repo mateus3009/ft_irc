@@ -77,11 +77,10 @@ void Client::close(void)
 
 Message::Source Client::getSource(void) const
 {
-    return (Message::Source) {
-        .nickname = _nickname,
-        .username = _username,
-        .hostname = _hostname
-    };
+    Message::Source src(_nickname);
+    src.hostname = _hostname;
+    src.username = _username;
+    return src;
 }
 
 Client::InvalidNicknameException::InvalidNicknameException(const char* what)

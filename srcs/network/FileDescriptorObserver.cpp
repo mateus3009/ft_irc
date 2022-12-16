@@ -5,7 +5,7 @@
 void FileDescriptorObserver::add(
     const int& fd, const short& events, Subscription& subscription)
 {
-    _pollfds.push_back((pollfd){.fd = fd, .events = events});
+    _pollfds.push_back((pollfd){.fd = fd, .events = events, .revents = 0});
     _subscriptions.push_back(&subscription);
 }
 

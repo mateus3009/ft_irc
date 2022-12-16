@@ -20,6 +20,8 @@ struct Message
 
         std::string toString(void) const;
 
+        Source(const std::string& nick);
+
     } source;
 
     std::string verb;

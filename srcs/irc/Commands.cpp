@@ -3,7 +3,7 @@
 /* Help */
 
 bool Help::isRegistered = CommandRouter::add("HELP", (CommandRegister) {
-    .command = Help::handler, .isRegistered = false, .paramsMin = 0});
+    .command = Help::handler, .isRegistered = false, .isOperator = false, .paramsMin = 0});
 
 void Help::handler(Payload& p)
 {
@@ -24,7 +24,7 @@ void Help::handler(Payload& p)
 /* Ping */
 
 bool Ping::isRegistered = CommandRouter::add("PING", (CommandRegister) {
-    .command = Ping::handler, .isRegistered = false, .paramsMin = 1});
+    .command = Ping::handler, .isRegistered = false, .isOperator = false, .paramsMin = 1});
 
 void Ping::handler(Payload& p)
 {
@@ -34,18 +34,18 @@ void Ping::handler(Payload& p)
 /* Pong */
 
 bool Pong::isRegistered = CommandRouter::add("PONG", (CommandRegister) {
-    .command = Pong::handler, .isRegistered = false, .paramsMin = 1});
+    .command = Pong::handler, .isRegistered = false, .isOperator = false, .paramsMin = 1});
 
 void Pong::handler(Payload&) {}
 
 /* Quit */
 
 bool Quit::isRegistered = CommandRouter::add("QUIT", (CommandRegister) {
-    .command = Quit::handler, .isRegistered = false, .paramsMin = 0});
+    .command = Quit::handler, .isRegistered = false, .isOperator = false, .paramsMin = 0});
 
 void Quit::handler(Payload& p)
 {
-    p.client->send(Message() << p.client->getSource() << Verb("ERROR") << "Bye!");
+    p.client->send(Message() << Verb("ERROR") << "Bye!");
     p.client->close();
 
     std::string reason = "Quit: ";
@@ -60,18 +60,18 @@ void Quit::handler(Payload& p)
 
 static void welcome(shared_ptr<Client>& client, const ServerContext* serverContext)
 {
-    client->send(Message() << (Message::Source) { .nickname = serverContext->serverName } << RPL_WELCOME << client->getNickname() << "Welcome to the " + serverContext->serverName + " Network, " + client->getSource().toString());
-    client->send(Message() << (Message::Source) { .nickname = serverContext->serverName } << RPL_YOURHOST << client->getNickname() << "Your host is " + serverContext->serverName + ", running version 1.0");
-    client->send(Message() << (Message::Source) { .nickname = serverContext->serverName } << RPL_CREATED << client->getNickname() << "This server was created 2022-10-14");
-    client->send(Message() << (Message::Source) { .nickname = serverContext->serverName } << RPL_MYINFO << client->getNickname() << serverContext->serverName << "1.0" << "+q" << "+i");
-    client->send(Message() << (Message::Source) { .nickname = serverContext->serverName } << RPL_ISUPPORT << client->getNickname() << "CASEMAPPING=ascii" << "are supported by this server");
+    client->send(Message() << Message::Source(serverContext->serverName) << RPL_WELCOME << client->getNickname() << "Welcome to the " + serverContext->serverName + " Network, " + client->getSource().toString());
+    client->send(Message() << Message::Source(serverContext->serverName) << RPL_YOURHOST << client->getNickname() << "Your host is " + serverContext->serverName + ", running version 1.0");
+    client->send(Message() << Message::Source(serverContext->serverName) << RPL_CREATED << client->getNickname() << "This server was created 2022-10-14");
+    client->send(Message() << Message::Source(serverContext->serverName) << RPL_MYINFO << client->getNickname() << serverContext->serverName << "1.0" << "+q" << "+i");
+    client->send(Message() << Message::Source(serverContext->serverName) << RPL_ISUPPORT << client->getNickname() << "CASEMAPPING=ascii" << "are supported by this server");
     client->isRegistered = true;
 }
 
 /* Pass */
 
 bool Pass::isRegistered = CommandRouter::add("PASS", (CommandRegister) {
-    .command = Pass::handler, .isRegistered = false, .paramsMin = 1});
+    .command = Pass::handler, .isRegistered = false, .isOperator = false, .paramsMin = 1});
 
 void Pass::handler(Payload& p)
 {
@@ -97,7 +97,7 @@ void Pass::handler(Payload& p)
 /* Nick */
 
 bool Nick::isRegistered = CommandRouter::add("NICK", (CommandRegister) {
-    .command = Nick::handler, .isRegistered = false, .paramsMin = 1});
+    .command = Nick::handler, .isRegistered = false, .isOperator = false, .paramsMin = 1});
 
 void Nick::handler(Payload& p)
 {
@@ -138,7 +138,7 @@ void Nick::handler(Payload& p)
 /* User */
 
 bool User::isRegistered = CommandRouter::add("USER", (CommandRegister) {
-    .command = User::handler, .isRegistered = false, .paramsMin = 4});
+    .command = User::handler, .isRegistered = false, .isOperator = false, .paramsMin = 4});
 
 void User::handler(Payload& p)
 {
@@ -164,7 +164,7 @@ void User::handler(Payload& p)
 /* Cap */
 
 bool Cap::isRegistered = CommandRouter::add("CAP", (CommandRegister) {
-    .command = Cap::handler, .isRegistered = false, .paramsMin = 1});
+    .command = Cap::handler, .isRegistered = false, .isOperator = false, .paramsMin = 1});
 
 void Cap::handler(Payload& p)
 {
@@ -202,7 +202,7 @@ void Cap::handler(Payload& p)
 /* Notice */
 
 bool Notice::isRegistered = CommandRouter::add("NOTICE", (CommandRegister) {
-    .command = Notice::handler, .isRegistered = true, .paramsMin = 2});
+    .command = Notice::handler, .isRegistered = true, .isOperator = false, .paramsMin = 2});
 
 void Notice::handler(Payload& p)
 {
@@ -234,7 +234,7 @@ void Notice::handler(Payload& p)
 /* Privmsg */
 
 bool Privmsg::isRegistered = CommandRouter::add("PRIVMSG", (CommandRegister) {
-    .command = Privmsg::handler, .isRegistered = true, .paramsMin = 2});
+    .command = Privmsg::handler, .isRegistered = true, .isOperator = false, .paramsMin = 2});
 
 void Privmsg::handler(Payload& p)
 {
@@ -274,7 +274,7 @@ void Privmsg::handler(Payload& p)
 /* Motd */
 
 bool Motd::isRegistered = CommandRouter::add("MOTD", (CommandRegister) {
-    .command = Motd::handler, .isRegistered = true, .paramsMin = 0});
+    .command = Motd::handler, .isRegistered = true, .isOperator = false, .paramsMin = 0});
 
 void Motd::handler(Payload& p)
 {
@@ -292,7 +292,7 @@ void Motd::handler(Payload& p)
 /* Mode */
 
 bool Mode::isRegistered = CommandRouter::add("MODE", (CommandRegister) {
-    .command = Mode::handler, .isRegistered = true, .paramsMin = 0});
+    .command = Mode::handler, .isRegistered = true, .isOperator = false, .paramsMin = 0});
 
 void Mode::handler(Payload& p)
 {
@@ -335,7 +335,7 @@ void Mode::handler(Payload& p)
 /* Whois */
 
 bool Whois::isRegistered = CommandRouter::add("WHOIS", (CommandRegister) {
-    .command = Whois::handler, .isRegistered = true, .paramsMin = 1});
+    .command = Whois::handler, .isRegistered = true, .isOperator = false, .paramsMin = 1});
 
 void Whois::handler(Payload& p)
 {
@@ -357,7 +357,7 @@ void Whois::handler(Payload& p)
 /* Join */
 
 bool Join::isRegistered = CommandRouter::add("JOIN", (CommandRegister) {
-    .command = Join::handler, .isRegistered = true, .paramsMin = 1});
+    .command = Join::handler, .isRegistered = true, .isOperator = false, .paramsMin = 1});
 
 void Join::handler(Payload& p)
 {
@@ -437,7 +437,7 @@ void Join::handler(Payload& p)
 /* Topic */
 
 bool Topic::isRegistered = CommandRouter::add("TOPIC", (CommandRegister) {
-    .command = Topic::handler, .isRegistered = true, .paramsMin = 1});
+    .command = Topic::handler, .isRegistered = true, .isOperator = false, .paramsMin = 1});
 
 void Topic::handler(Payload& p)
 {
@@ -475,7 +475,7 @@ void Topic::handler(Payload& p)
 /* Part */
 
 bool Part::isRegistered = CommandRouter::add("PART", (CommandRegister) {
-    .command = Part::handler, .isRegistered = true, .paramsMin = 1});
+    .command = Part::handler, .isRegistered = true, .isOperator = false, .paramsMin = 1});
 
 void Part::handler(Payload& p)
 {
@@ -506,7 +506,7 @@ void Part::handler(Payload& p)
 /* Who */
 
 bool Who::isRegistered = CommandRouter::add("WHO", (CommandRegister) {
-    .command = Who::handler, .isRegistered = true, .paramsMin = 1});
+    .command = Who::handler, .isRegistered = true, .isOperator = false, .paramsMin = 1});
 
 void Who::handler(Payload& p)
 {
@@ -553,7 +553,7 @@ void Who::handler(Payload& p)
 /* Oper */
 
 bool Oper::isRegistered = CommandRouter::add("OPER", (CommandRegister) {
-    .command = Oper::handler, .isRegistered = true, .paramsMin = 2});
+    .command = Oper::handler, .isRegistered = true, .isOperator = false, .paramsMin = 2});
 
 void Oper::handler(Payload& p)
 {
@@ -583,7 +583,7 @@ void Kill::handler(Payload& p)
     {
         shared_ptr<Client> c = p.clientStore->find(target);
         p.clientStore->broadcast(Message() << c->getSource() << Verb("QUIT") << c->getNickname() << "Killed " + p.client->getNickname() + " " + reason);
-        c->send(Message() << p.client->getSource() << Verb("ERROR") << reason);
+        c->send(Message() << Verb("ERROR") << "Closing Link: " + p.serverContext->serverName + " Killed " + p.client->getNickname() + " " + reason);
         c->close();
     }
     catch(const ClientStore::ClientNotFoundException&)

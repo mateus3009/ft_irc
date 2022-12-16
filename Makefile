@@ -8,7 +8,7 @@ FILE_SOURCE		:= $(filter %.cpp, $(shell find $(DIRECTORY_SOURCE) -type f))
 
 OBJECTS_SOURCE	:= $(addprefix $(DIRECTORY_TARGET)/, $(FILE_SOURCE:.cpp=.o))
 
-COMPILER		:= clang++
+COMPILER		:= c++
 COMPILER_FLAGS	:= -Wall -Wextra -Werror --std=c++98
 
 .PHONY : all clean fclean make re test

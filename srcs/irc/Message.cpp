@@ -18,6 +18,8 @@ std::string Message::Source::toString(void) const
     return stream.str();
 }
 
+Message::Source::Source(const std::string& nick = "") : nickname(nick), username(), hostname() {}
+
 Message::Message(void) {}
 
 Message::Message(const std::string& str)
