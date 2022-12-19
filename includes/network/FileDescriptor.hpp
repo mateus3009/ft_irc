@@ -2,12 +2,10 @@
 # define FILEDESCRIPTOR_HPP
 
 # include <unistd.h>
-# include <vector>
-# include <poll.h>
-# include <cerrno>
-# include <cstring>
+# include <iostream>
+# include <string>
 
-# include "../utils/observer.hpp"
+# include "../utils/Error.hpp"
 
 # define INVALID_FD -1
 
@@ -19,25 +17,24 @@ class FileDescriptor
     public:
         FileDescriptor(const int& id = INVALID_FD);
 
+        virtual ~FileDescriptor();
+
         int getId(void) const;
 
-        void close(void) const;
-
-        struct InvalidFileDescriptorException : public std::runtime_error
-        {
-            InvalidFileDescriptorException(const char* what);
-        };
+        virtual void close(void) const;
 
 };
 
-struct Reader
+class FileDescriptorInteractive : public virtual FileDescriptor
 {
-    virtual ssize_t receive(void* buf, const size_t& n, const int& flags = 0) const = 0;
+    public:
+        FileDescriptorInteractive(const int& id = INVALID_FD);
+
+        virtual ssize_t read(void *buf, size_t nbytes) const;
+
+        virtual ssize_t write(const void *buf, size_t nbytes) const;
 };
 
-struct Writer
-{
-    virtual ssize_t send(const void* buf, const size_t& n, const int& flags = 0) const = 0;
-};
+std::ostream &operator<<(std::ostream& stream, const FileDescriptor& fd);
 
 #endif

@@ -2,31 +2,55 @@
 
 /* Membership */
 
-Membership::Membership(shared_ptr<Client> client, const unsigned int& modes) : Modes(modes), _client(client) {}
+Membership::Membership(shared_ptr<Client> client)
+    : _client(client), _isFounder(false), _isModerator(false) {}
 
 shared_ptr<Client> Membership::getClient(void) const { return _client; }
 
-bool operator==(const Membership& l, const Membership& r)
+bool Membership::isFounder(void) const { return _isFounder; }
+
+bool Membership::isModerator(void) const { return _isModerator; }
+
+bool operator==(const Membership& l, const std::string& r)
 {
-    return l.getClient() == r.getClient();
+    return strcasecmp(
+        l.getClient()->getNickname().c_str(),
+        r.c_str()) == 0;
 }
 
-bool operator==(const Membership& m, const Client& c)
+bool operator==(const Membership& l, const Membership& r)
 {
-    return m.getClient() == c;
+    return strcasecmp(
+        l.getClient()->getNickname().c_str(),
+        r.getClient()->getNickname().c_str()) == 0;
 }
 
 bool operator<(const Membership& l, const Membership& r)
 {
-    return l.getClient() < r.getClient();
+    return strcasecmp(
+        l.getClient()->getNickname().c_str(),
+        r.getClient()->getNickname().c_str());
+}
+
+static bool validChannelCharacter(unsigned char c)
+{
+    return ::isalnum(c) || c == '-' || c == '_';
 }
 
 /* Channel */
 
-Channel::Channel(const std::string& name, shared_ptr<Client> founder, ChannelStore& store) : Modes(MODE_CHANNEL_PROTECTED_TOPIC | MODE_CHANNEL_NO_EXTERNAL_MESSAGES), _name(name), _store(store)
+Channel::Channel(
+    const std::string& name, shared_ptr<Client> founder, ChannelStore& store)
+    : _name(name), _topic(), _key(), _memberships(), _store(&store)
 {
+    if (name.size() < 6
+        || 21 < name.size()
+        || !allOf(name.begin() + 1, name.end(), validChannelCharacter)
+        || strchr("#&", *name.begin()) == NULL)
+        throw InvalidChannelNameException(
+            "The channel name must match the expression [#&][a-zA-Z]{5,20}");
     shared_ptr<Membership> membership = add(founder);
-    membership->setModes(MODE_MEMBERSHIP_FOUNDER);
+    membership->_isFounder = true;
 }
 
 std::string Channel::getName(void) const { return _name; }
@@ -41,94 +65,154 @@ void Channel::setKey(const std::string& key) { _key = key; }
 
 shared_ptr<Membership> Channel::add(shared_ptr<Client> client)
 {
-    shared_ptr<Membership> membership = new Membership(client);
-    if (!_memberships.insert(membership).second)
-        throw Channel::ClientIsAlreadyAMemberException("The Client is already a member of this channel!");
+    std::set<shared_ptr<Membership> >::iterator it =
+        std::find(_memberships.begin(), _memberships.end(), client);
+    if (it != _memberships.end())
+        throw Channel::ClientIsAlreadyAMemberException(
+            "The Client is already a member of this channel!");
+    shared_ptr<Membership> membership =
+        shared_ptr<Membership>::make_shared(new Membership(client));
+    _memberships.insert(membership);
     return membership;
 }
 
-shared_ptr<Membership> Channel::find(shared_ptr<Client> client)
+shared_ptr<Membership> Channel::find(const std::string& nickname)
 {
-    Channel::iterator it = std::find(_memberships.begin(), _memberships.end(), client);
+    std::set<shared_ptr<Membership> >::iterator it =
+        std::find(_memberships.begin(), _memberships.end(), nickname);
     if (it == _memberships.end())
-        throw Channel::ClientNotFoundException("The client is not a member of this channel!");
+        throw Channel::ClientNotFoundException(
+            "The client is not a member of this channel!");
     return *it;
 }
 
-void Channel::remove(shared_ptr<Membership>& membership)
+void Channel::remove(const std::string& nickname)
 {
-    Channel::iterator it = _memberships.find(membership);
+    std::set<shared_ptr<Membership> >::iterator it =
+        std::find(_memberships.begin(), _memberships.end(), nickname);
     if (it == _memberships.end())
-        throw Channel::ClientNotFoundException("The client is not a member of this channel!");
+        throw Channel::ClientNotFoundException(
+            "The client is not a member of this channel!");
 
-    _memberships.erase(membership);
+    _memberships.erase(it);
 
     if (_memberships.empty())
-        _store.remove(this);
+        _store->remove(_name);
 }
 
-void Channel::broadcast(const Message& msg)
+void Channel::broadcast(const Message& msg, const std::string& author)
 {
-    ClientMessageSender s = { .msg = msg };
-    std::for_each(_memberships.begin(), _memberships.end(), s);
+    std::set<shared_ptr<Membership> >::iterator it = _memberships.begin();
+    while (it != _memberships.end())
+    {
+        if ((*it)->getClient()->getNickname() != author)
+            (*it)->getClient()->send(msg);
+        ++it;
+    }
 }
 
-Channel::iterator Channel::begin(void) const { return _memberships.begin(); }
-
-Channel::iterator Channel::end(void) const { return _memberships.end(); }
-
-Channel::ClientIsAlreadyAMemberException::ClientIsAlreadyAMemberException(const char* what) : std::runtime_error(what) {}
-
-Channel::ClientNotFoundException::ClientNotFoundException(const char* what) : std::runtime_error(what) {}
-
-void Channel::ClientMessageSender::operator()(shared_ptr<Membership> membership)
+std::set<shared_ptr<Membership> >::iterator Channel::begin(void) const
 {
-    membership->getClient()->send(msg);
+    return _memberships.begin();
+}
+
+std::set<shared_ptr<Membership> >::iterator Channel::end(void) const
+{
+    return _memberships.end();
+}
+
+Channel::InvalidChannelNameException::InvalidChannelNameException(
+    const char* what) : Error(what) {}
+
+Channel::ClientIsAlreadyAMemberException::ClientIsAlreadyAMemberException(
+    const char* what) : Error(what) {}
+
+Channel::ClientNotFoundException::ClientNotFoundException(const char* what)
+    : Error(what) {}
+
+
+bool operator==(const Channel& channel, const std::string& name)
+{
+    if (name.empty())
+        return false;
+    return strcasecmp(channel.getName().c_str() + 1, name.c_str() + 1) == 0;
 }
 
 bool operator==(const Channel& l, const Channel& r)
 {
-    return iequals(l.getName(), r.getName());
-}
-
-bool operator==(const Channel& channel, const std::string& name)
-{
-    return iequals(channel.getName(), name);
+    return strcasecmp(l.getName().c_str() + 1, r.getName().c_str() + 1) == 0;
 }
 
 bool operator<(const Channel& l, const Channel& r)
 {
-    return l.getName() < r.getName();
+    return strcasecmp(l.getName().c_str() + 1, r.getName().c_str() + 1);
 }
 
 /* ChannelStore */
 
-void ChannelStore::add(shared_ptr<Client> client, const std::string& name)
+ChannelStore::ChannelStore(void) : _channels() {}
+
+shared_ptr<Channel> ChannelStore::add(shared_ptr<Client> client, const std::string& name)
 {
-    shared_ptr<Channel> channel = new Channel(name, client, *this);
-    if (!_channels.insert(channel).second)
-        throw ChannelStore::ChannelAlreadyExistsException("Two channels cannot have the same name!");
-    channel->setModes(MODE_CHANNEL_PROTECTED_TOPIC | MODE_CHANNEL_NO_EXTERNAL_MESSAGES);
+    std::set<shared_ptr<Channel> >::iterator it =
+        std::find(_channels.begin(), _channels.end(), name);
+    if (it != _channels.end())
+        throw ChannelStore::ChannelAlreadyExistsException(
+            "Two channels cannot have the same name!");
+    shared_ptr<Channel> channel =
+        shared_ptr<Channel>::make_shared(new Channel(name, client, *this));
+    _channels.insert(channel);
+    return channel;
 }
 
 shared_ptr<Channel> ChannelStore::find(const std::string& name)
 {
-    ChannelStore::iterator it = std::find(_channels.begin(), _channels.end(), name);
+    std::set<shared_ptr<Channel> >::iterator it =
+        std::find(_channels.begin(), _channels.end(), name);
     if (it == _channels.end())
-        throw ChannelStore::ChannelNotFoundException("There is no channel with this name!");
+        throw ChannelStore::ChannelNotFoundException(
+            "There is no channel with this name!");
     return *it;
 }
 
-void ChannelStore::remove(const shared_ptr<Channel>& channel)
+void ChannelStore::remove(const std::string& name)
 {
-    if (_channels.erase(channel) == 0)
-        throw ChannelStore::ChannelNotFoundException("The channel does not exists!");
+    std::set<shared_ptr<Channel> >::iterator it =
+        std::find(_channels.begin(), _channels.end(), name);
+    if (it != _channels.end())
+        _channels.erase(it);
 }
 
-ChannelStore::iterator ChannelStore::begin(void) const { return _channels.begin(); }
+std::set<shared_ptr<Channel> >::iterator ChannelStore::begin(void)
+{
+    return _channels.begin();
+}
 
-ChannelStore::iterator ChannelStore::end(void) const { return _channels.end(); }
+std::set<shared_ptr<Channel> >::iterator ChannelStore::end(void)
+{
+    return _channels.end();
+}
 
-ChannelStore::ChannelAlreadyExistsException::ChannelAlreadyExistsException(const char* what) : std::runtime_error(what) {}
+void ChannelStore::removeFromAllChannels(const std::string& nickname)
+{
+    std::set<shared_ptr<Channel> >::iterator it = _channels.begin();
+    while (it != _channels.end())
+    {
+        try
+        {
+            shared_ptr<Channel> c = *it;
+            c->remove(nickname);
+            it = _channels.begin();
+        }
+        catch(const Channel::ClientNotFoundException&)
+        {
+            ++it;
+        }
+    }
+}
 
-ChannelStore::ChannelNotFoundException::ChannelNotFoundException(const char* what) : std::runtime_error(what) {}
+ChannelStore::ChannelAlreadyExistsException::ChannelAlreadyExistsException(
+    const char* what) : Error(what) {}
+
+ChannelStore::ChannelNotFoundException::ChannelNotFoundException(
+    const char* what) : Error(what) {}

@@ -8,11 +8,11 @@ FILE_SOURCE		:= $(filter %.cpp, $(shell find $(DIRECTORY_SOURCE) -type f))
 
 OBJECTS_SOURCE	:= $(addprefix $(DIRECTORY_TARGET)/, $(FILE_SOURCE:.cpp=.o))
 
-COMPILER		:= clang++
-COMPILER_FLAGS	:= -Wall -Wextra -Werror -g --std=c++98 -D_GLIBCXX_DEBUG
+COMPILER		:= c++
+COMPILER_FLAGS	:= -Wall -Wextra -Werror -g -D_GLIBCXX_DEBUG --std=c++98
 
-.PHONY : all clean fclean make re bonus
-.SILENT : all clean fclean make re bonus
+.PHONY : all clean fclean make re test
+.SILENT : all clean fclean make re test
 
 all : $(NAME)
 
@@ -24,6 +24,9 @@ fclean :
 	@rm -rf $(DIRECTORY_TARGET)
 
 re : clean all
+
+test : $(NAME)
+	valgrind --leak-check=full --track-origins=yes -q ./$(NAME) 8081 42
 
 $(NAME) : $(OBJECTS_SOURCE)
 	@$(COMPILER) $(COMPILER_FLAGS) $(OBJECTS_SOURCE) -o $(NAME)

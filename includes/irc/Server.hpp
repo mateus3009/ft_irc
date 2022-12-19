@@ -1,0 +1,38 @@
+#ifndef SERVER_HPP
+# define SERVER_HPP
+
+# include <csignal>
+
+# include "../network/FileDescriptorObserver.hpp"
+# include "network/ListenerSubscription.hpp"
+# include "network/ConnectionSubscription.hpp"
+# include "Client.hpp"
+# include "CommandRouter.hpp"
+# include "Channel.hpp"
+
+class CommandRouter;
+
+struct ServerContext
+{
+    std::string motd;
+
+    std::string password;
+
+    std::string serverName;
+
+    std::string operName;
+
+    std::string operPassword;
+
+};
+
+class Server
+{
+    private:
+        void init(const SocketListener& listener, const std::string& password);
+
+    public:
+        Server(const char* port = "0", const char* password = "");
+};
+
+#endif

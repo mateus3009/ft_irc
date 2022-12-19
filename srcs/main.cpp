@@ -1,30 +1,22 @@
-#include "network/Server.hpp"
-#include "irc/IrcConnection.hpp"
-#include "irc/Router.hpp"
-#include "irc/Client.hpp"
-#include "irc/Channel.hpp"
-#include "irc/IrcServer.hpp"
-#include "irc/commands/commons/UnkownCommand.hpp"
-#include <iostream>
+#include "irc/Server.hpp"
 
-int main(int argc, const char** argv)
+int main(int argc, char** argv)
 {
-    if (argc < 3)
+    try
     {
-        std::cout << "Usage: " << argv[0] << " <port> <pass>" << std::endl;
+        if (argc != 3)
+        {
+            std::cerr << "Usage " << argv[0] << " <port> <password>" << std::endl;
+            return 1;
+        }
+
+        Server s(argv[1], argv[2]);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
         return 1;
     }
-    ClientStore clientStore;
-    ChannelStore channelStore;
-    IrcServer ircServer;
-    ircServer.setPassword(argv[2]);
-    ircServer.setServerName("42irc");
-    Router::setNotFound(UnkownCommand::handle);
-    Router::setClientStore(&clientStore);
-    Router::setChannelStore(&channelStore);
-    Router::setIrcServer(&ircServer);
-    Server<IrcConnection> server("localhost", argv[1]);
 
-    server.listen();
     return 0;
-}
+};

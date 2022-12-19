@@ -1,12 +1,14 @@
 #include "irc/Message.hpp"
 
+/* Message */
+
 std::string Message::Source::toString(void) const
 {
     std::stringstream stream;
 
     if (!this->nickname.empty())
     {
-        stream << ':' << this->nickname;
+        stream << this->nickname;
         if (!this->username.empty())
             stream << '!' << this->username;
         if (!this->hostname.empty())
@@ -15,6 +17,8 @@ std::string Message::Source::toString(void) const
     }
     return stream.str();
 }
+
+Message::Source::Source(const std::string& nick = "") : nickname(nick), username(), hostname() {}
 
 Message::Message(void) {}
 
@@ -74,10 +78,11 @@ Message::Message(const char* str)
     while (str[index] != '\0' && strchr(" \t", str[index]) == NULL)
         ++index;
     this->verb = std::string(str + start, str + index);
+    std::transform(verb.begin(), verb.end(), verb.begin(), ::toupper);
 
     /* Params */
 
-    while (str[index] != '\0' && strchr("", str[index]) == NULL)
+    while (str[index] != '\0')
     {
         while (str[index] != '\0' && strchr(" \t", str[index]) != NULL)
             ++index;
@@ -88,7 +93,8 @@ Message::Message(const char* str)
         start = index;
         while (str[index] != '\0' && strchr(" \t", str[index]) == NULL)
             ++index;
-        this->params.push_back(std::string(str + start, str + index));
+        if (start != index)
+            this->params.push_back(std::string(str + start, str + index));
     }
 
     /* Trailing Param */
@@ -129,11 +135,12 @@ std::string Message::toString(void) const
 {
     std::stringstream stream;
 
-    stream << this->source.toString();
+    stream << ':' << this->source.toString();
 
     stream << this->verb;
 
-    for (std::vector<std::string>::const_iterator it = params.begin(); it != params.end(); ++it)
+    for (std::vector<std::string>::const_iterator it = params.begin();
+        it != params.end(); ++it)
     {
         stream << ' ';
         if (it->find(' ') != std::string::npos || it + 1 == params.end())
@@ -141,7 +148,7 @@ std::string Message::toString(void) const
         stream << *it;
     }
 
-    return stream.str();
+    return stream.str().substr(0, 512);
 }
 
 void Message::clear(void)

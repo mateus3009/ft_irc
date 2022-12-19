@@ -1,42 +1,57 @@
 #include "irc/Client.hpp"
 
-Client::Client(const std::string& hostname, IrcConnection& connection, ClientStore& store) : Modes(0), _nickname("*"), _hostname(hostname), _connection(connection), _store(store){}
+/* Client */
+
+Client::Client(ClientStore& store, ConnectionSubscription& connection) :
+    _store(&store),
+    _connection(&connection),
+    _nickname("*"),
+    isRegistered(false),
+    hasPassword(false),
+    usingCap(false),
+    isOperator(false) {}
 
 std::string Client::getNickname(void) const { return _nickname; }
 
-static bool validNicknameCharacter(unsigned char c) { return ::isalnum(c) || c == '-' || c == '_'; }
+static bool validNicknameCharacter(unsigned char c)
+{
+    return ::isalnum(c) || c == '-' || c == '_';
+}
 
 void Client::setNickname(const std::string& nickname)
 {
-    if (!allOf(nickname.begin(), nickname.end(), validNicknameCharacter))
-        throw Client::AlphaNumericConstraintViolationException("The nickname must be alphanumeric!");
+    if (nickname.size() > 20)
+        throw InvalidNicknameException(
+            "The nickname cannot have more than 20 characteres!");
 
+    if (!allOf(nickname.begin(), nickname.end(), validNicknameCharacter))
+        throw InvalidNicknameException(
+            "The nickanme must match the expression [a-zA-Z\\-_]");
     try
     {
-        _store.find(nickname);
-        throw Client::NicknameIsAlreadyInUseException("The nickname provided is already in use by another client!");
+        _store->find(nickname);
+        throw NicknameIsAlreadyInUseException(
+            "There is a client with the same nickname!");
     }
-    catch(const ClientStore::ClientNotFoundException& e)
+    catch(const ClientStore::ClientNotFoundException&)
     {
         _nickname = nickname;
     }
-
 }
 
 std::string Client::getUsername(void) const { return _username; }
 
 void Client::setUsername(const std::string& username)
 {
-    if (!_username.empty())
-        throw Client::UsernameIsAlreadyDefinedException("The username is already set! You can't change it anymore!");
-
-    if (!allOf(username.begin(), username.end(), validNicknameCharacter))
-        throw Client::AlphaNumericConstraintViolationException("The username must be alphanumeric!");
-
     _username = username;
 }
 
 std::string Client::getHostname(void) const { return _hostname; }
+
+void Client::setHostname(const std::string& hostname)
+{
+    _hostname = hostname;
+}
 
 std::string Client::getRealName(void) const { return _realName; }
 
@@ -45,98 +60,89 @@ void Client::setRealName(const std::string& realName)
     _realName = realName;
 }
 
-void Client::send(const Message& msg) { _connection.send(msg); }
+void Client::send(const Message& msg)
+{
+    std::string str = msg.toString();
+    std::cout << getId() << "< " << str << std::endl;
+    _connection->write(str);
+}
+
+int Client::getId(void) const { return _connection->getId(); }
 
 void Client::close(void)
 {
-    _connection.close();
+    _store->remove(_connection->getId());
+    _connection->close();
 }
 
 Message::Source Client::getSource(void) const
 {
-    return (Message::Source) {
-        .nickname = _nickname,
-        .username = _username,
-        .hostname = _hostname
-    };
+    Message::Source src(_nickname);
+    src.hostname = _hostname;
+    src.username = _username;
+    return src;
 }
 
-bool Client::Client::addChannel(std::string ch) {
-	for (std::set<std::string>::iterator it = _channels.begin(); it != _channels.end(); ++it)
-        std::cout << "|" << *it << "|" <<std::endl;
-    return _channels.insert(ch).second;
-}
+Client::InvalidNicknameException::InvalidNicknameException(const char* what)
+    : Error(what) {}
 
-Client::AlphaNumericConstraintViolationException::AlphaNumericConstraintViolationException(const char* what) : std::runtime_error(what) {}
+Client::NicknameIsAlreadyInUseException::NicknameIsAlreadyInUseException(
+    const char* what) : Error(what) {}
 
-Client::NicknameIsAlreadyInUseException::NicknameIsAlreadyInUseException(const char* what) : std::runtime_error(what) {}
+Client::AlreadyDefinedException::AlreadyDefinedException(const char* what)
+    : Error(what) {}
 
-Client::UsernameIsAlreadyDefinedException::UsernameIsAlreadyDefinedException(const char* what) : std::runtime_error(what) {}
-
-bool operator==(const Client& l, const Client& r)
+bool operator==(const Client& c, const std::string n)
 {
-    return iequals(l.getNickname(), r.getNickname());
-}
-
-bool operator==(const Client& client, const std::string& nickname)
-{
-    return iequals(client.getNickname(), nickname);
-}
-
-bool operator<(const Client& l, const Client& r)
-{
-    return l.getNickname() < r.getNickname();
+    return strcasecmp(c.getNickname().c_str(), n.c_str()) == 0;
 }
 
 /* ClientStore */
 
-shared_ptr<Client> ClientStore::add(const int& id, const std::string& hostname, IrcConnection& connection)
+shared_ptr<Client> ClientStore::add(ConnectionSubscription& connection)
 {
-    shared_ptr<Client> client = new Client(hostname, connection, *this);
-    if (!_clients.insert(std::make_pair(id, client)).second)
-        throw ClientStore::ClientAlreadyExists("The client already exists!");
-    return client;
+    shared_ptr<Client> c = shared_ptr<Client>::make_shared(
+        new Client(*this, connection));
+    if (_clients.insert(std::make_pair(c->getId(), c)).second == false)
+        throw ClientAlreadyExistsException(
+            "The client with this id already exists");
+    return c;
+}
+
+void ClientStore::remove(const int& id)
+{
+    _clients.erase(id);
 }
 
 shared_ptr<Client> ClientStore::find(const std::string& nickname)
 {
     NicknamePredicate p = { .nickname = nickname };
-    ClientStore::iterator it = std::find_if(_clients.begin(), _clients.end(), p);
+    std::map<int, shared_ptr<Client> >::iterator it =
+        std::find_if(_clients.begin(), _clients.end(), p);
     if (it == _clients.end())
-        throw ClientStore::ClientNotFoundException("Client Not Found!");
+        throw ClientNotFoundException("Client Not Found!");
     return it->second;
 }
 
-void ClientStore::broadcast(const Message& msg)
+void ClientStore::broadcast(const Message& msg, const std::string& author)
 {
-    ClientMessageSender s = { .msg = msg };
-    std::for_each(_clients.begin(), _clients.end(), s);
+    for (std::map<int, shared_ptr<Client> >::iterator it = _clients.begin();
+        it != _clients.end(); ++it)
+    {
+        if (it->second->isRegistered && it->second->getNickname() != author)
+            it->second->send(msg);
+    }
 }
 
-void ClientStore::remove(shared_ptr<Client> client)
+ClientStore::ClientNotFoundException::ClientNotFoundException(const char* what)
+    : Error(what) {}
+
+ClientStore::ClientAlreadyExistsException::ClientAlreadyExistsException(
+    const char* what) : Error(what) {}
+
+bool ClientStore::NicknamePredicate::operator()(
+    std::pair<int, shared_ptr<Client> > item)
 {
-    ClientPredicate p = { .client = client };
-    ClientStore::iterator it = std::find_if(_clients.begin(), _clients.end(), p);
-    if (it == _clients.end())
-        throw ClientStore::ClientNotFoundException("Client Not Found!");
-    _clients.erase(it);
-}
-
-ClientStore::ClientNotFoundException::ClientNotFoundException(const char* what) : std::runtime_error(what) {}
-
-ClientStore::ClientAlreadyExists::ClientAlreadyExists(const char* what) : std::runtime_error(what) {}
-
-bool ClientStore::NicknamePredicate::operator()(std::pair<int, shared_ptr<Client> > item)
-{
-    return item.second == nickname;
-}
-
-bool ClientStore::ClientPredicate::operator()(std::pair<int, shared_ptr<Client> > item)
-{
-    return item.second == client;
-}
-
-void ClientStore::ClientMessageSender::operator()(std::pair<int, shared_ptr<Client> > item)
-{
-    item.second->send(msg);
+    return strcasecmp(
+        item.second->getNickname().c_str(), nickname.c_str()) == 0;
 }
